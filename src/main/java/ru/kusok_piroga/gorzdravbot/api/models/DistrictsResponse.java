@@ -9,8 +9,8 @@ import java.util.List;
 public class DistrictsResponse {
     private List<District> result;
     @Getter
-    private boolean success;
-    private int errorCode;
+    private Boolean success;
+    private Integer errorCode;
     private String message;
     private String stackTrace;
 
