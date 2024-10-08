@@ -16,7 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApiService {
     private static final String URL_DISTRICTS = "https://gorzdrav.spb.ru/_api/api/v2/shared/districts";
-    private static final String URL_POLYCLINICS = "https://gorzdrav.spb.ru/_api/api/v2/shared/district/{districtId}/lpus";
+    private static final String URL_POLYCLINICS_BY_DISTRICT = "https://gorzdrav.spb.ru/_api/api/v2/shared/district/{districtId}/lpus";
+    private static final String URL_POLYCLINICS_BY_OMS = "https://gorzdrav.spb.ru/_api/api/v2/oms/attachment/lpus?polisN={polisN}";
 
     private final WebClient webClient = WebClient.create();
 
@@ -39,7 +40,23 @@ public class ApiService {
     public List<Polyclinic> getPolyclinicsByDistrict(int districtId){
         PolyclinicsResponse response = webClient
                 .get()
-                .uri(URL_POLYCLINICS, districtId)
+                .uri(URL_POLYCLINICS_BY_DISTRICT, districtId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(PolyclinicsResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getPolyclinicList();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Polyclinic> getPolyclinicsByOMS(String omsNumber){
+        PolyclinicsResponse response = webClient
+                .get()
+                .uri(URL_POLYCLINICS_BY_OMS, omsNumber)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(PolyclinicsResponse.class)
