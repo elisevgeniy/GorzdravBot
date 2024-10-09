@@ -17,6 +17,8 @@ public class ApiService {
     private static final String URL_POLYCLINICS_BY_OMS = "https://gorzdrav.spb.ru/_api/api/v2/oms/attachment/lpus?polisN={polisN}";
     private static final String URL_SPECIALTIES = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/specialties";
     private static final String URL_DOCTORS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/speciality/{specialtyId}/doctors";
+    private static final String URL_TIMETABLES = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/timetable";
+    private static final String URL_APPOINTMENTS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/appointments";
 
     private final WebClient webClient = WebClient.create();
 
@@ -95,6 +97,38 @@ public class ApiService {
 
         if (response != null && response.isSuccess()){
             return response.getDoctors();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Timetable> getTimetables(Integer polyclinicId, String doctorId){
+        TimetablesResponse response = webClient
+                .get()
+                .uri(URL_TIMETABLES, polyclinicId, doctorId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(TimetablesResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getTimetables();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Appointment> getAppointments(Integer polyclinicId, String doctorId){
+        AppointmentsResponse response = webClient
+                .get()
+                .uri(URL_APPOINTMENTS, polyclinicId, doctorId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(AppointmentsResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getAppointments();
         } else {
             return Collections.emptyList();
         }

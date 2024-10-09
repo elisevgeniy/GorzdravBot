@@ -3,10 +3,7 @@ package ru.kusok_piroga.gorzdravbot.api.services;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.kusok_piroga.gorzdravbot.api.models.District;
-import ru.kusok_piroga.gorzdravbot.api.models.Doctor;
-import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
-import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
+import ru.kusok_piroga.gorzdravbot.api.models.*;
 
 import java.util.List;
 
@@ -64,5 +61,23 @@ class ApiServiceTests {
                 .isNotEmpty();
         assertThat(doctors.get(0).id()).withFailMessage("Получены невалидные данные")
                 .isEqualTo("3439");
+    }
+
+    @Test
+    void testTimetableList(){
+        int polyclinicId = 1;
+        String doctorId = "3439";
+        List<Timetable> timetables = apiService.getTimetables(polyclinicId, doctorId);
+        assertThat(timetables).withFailMessage("Список времени приема не должен быть пустым")
+                .isNotEmpty();
+    }
+
+    @Test
+    void testAppointmentList(){
+        int polyclinicId = 1;
+        String doctorId = "3439";
+        List<Appointment> appointments = apiService.getAppointments(polyclinicId, doctorId);
+        assertThat(appointments).withFailMessage("Список талончиков не должен быть пустым")
+                .isNotEmpty();
     }
 }
