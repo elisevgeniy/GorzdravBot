@@ -16,6 +16,7 @@ public class ApiService {
     private static final String URL_POLYCLINICS_BY_DISTRICT = "https://gorzdrav.spb.ru/_api/api/v2/shared/district/{districtId}/lpus";
     private static final String URL_POLYCLINICS_BY_OMS = "https://gorzdrav.spb.ru/_api/api/v2/oms/attachment/lpus?polisN={polisN}";
     private static final String URL_SPECIALTIES_BY_POLYCLINIC = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/specialties";
+    private static final String URL_DOCTORS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/speciality/{specialtyId}/doctors";
 
     private final WebClient webClient = WebClient.create();
 
@@ -78,6 +79,22 @@ public class ApiService {
 
         if (response != null && response.isSuccess()){
             return response.getSpecialties();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Doctor> getDoctors(Integer polyclinicId, String specialtyId){
+        DoctorsResponse response = webClient
+                .get()
+                .uri(URL_DOCTORS, polyclinicId, specialtyId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(DoctorsResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getDoctors();
         } else {
             return Collections.emptyList();
         }
