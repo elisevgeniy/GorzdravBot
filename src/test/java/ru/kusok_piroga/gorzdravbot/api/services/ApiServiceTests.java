@@ -27,7 +27,7 @@ class ApiServiceTests {
     }
 
     @Test
-    void testPolyclinicListByDistcrict(){
+    void testPolyclinicListByDistrict(){
         int districtId = 3;
         List<Polyclinic> polyclinics = apiService.getPolyclinicsByDistrict(districtId);
         assertThat(polyclinics).withFailMessage("Список поликлиник не должен быть пустым")
@@ -46,9 +46,9 @@ class ApiServiceTests {
     }
 
     @Test
-    void testSpecialtyListByPolyclinic(){
+    void testSpecialtyList(){
         int polyclinicId = 1;
-        List<Specialty> specialties = apiService.getSpecialtiesByPolyclinic(polyclinicId);
+        List<Specialty> specialties = apiService.getSpecialties(polyclinicId);
         assertThat(specialties).withFailMessage("Список специальностей не должен быть пустым")
                 .isNotEmpty();
         assertThat(specialties.get(0).id()).withFailMessage("Получены невалидные данные")
