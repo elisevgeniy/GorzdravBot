@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.kusok_piroga.gorzdravbot.api.models.District;
-import ru.kusok_piroga.gorzdravbot.api.models.DistrictsResponse;
-import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
-import ru.kusok_piroga.gorzdravbot.api.models.PolyclinicsResponse;
+import ru.kusok_piroga.gorzdravbot.api.models.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +15,7 @@ public class ApiService {
     private static final String URL_DISTRICTS = "https://gorzdrav.spb.ru/_api/api/v2/shared/districts";
     private static final String URL_POLYCLINICS_BY_DISTRICT = "https://gorzdrav.spb.ru/_api/api/v2/shared/district/{districtId}/lpus";
     private static final String URL_POLYCLINICS_BY_OMS = "https://gorzdrav.spb.ru/_api/api/v2/oms/attachment/lpus?polisN={polisN}";
+    private static final String URL_SPECIALTIES_BY_POLYCLINIC = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/specialties";
 
     private final WebClient webClient = WebClient.create();
 
@@ -64,6 +62,22 @@ public class ApiService {
 
         if (response != null && response.isSuccess()){
             return response.getPolyclinicList();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Specialty> getSpecialtiesByPolyclinic(Integer polyclinicId){
+        SpecialtiesResponse response = webClient
+                .get()
+                .uri(URL_SPECIALTIES_BY_POLYCLINIC, polyclinicId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(SpecialtiesResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getSpecialties();
         } else {
             return Collections.emptyList();
         }
