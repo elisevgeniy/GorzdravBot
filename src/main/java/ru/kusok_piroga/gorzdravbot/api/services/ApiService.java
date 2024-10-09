@@ -6,12 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.kusok_piroga.gorzdravbot.api.models.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ApiService {
+    private static final String SCHEME = "https";
+    private static final String HOST = "gorzdrav.spb.ru";
     private static final String URL_DISTRICTS = "https://gorzdrav.spb.ru/_api/api/v2/shared/districts";
     private static final String URL_POLYCLINICS_BY_DISTRICT = "https://gorzdrav.spb.ru/_api/api/v2/shared/district/{districtId}/lpus";
     private static final String URL_POLYCLINICS_BY_OMS = "https://gorzdrav.spb.ru/_api/api/v2/oms/attachment/lpus?polisN={polisN}";
@@ -19,8 +23,10 @@ public class ApiService {
     private static final String URL_DOCTORS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/speciality/{specialtyId}/doctors";
     private static final String URL_TIMETABLES = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/timetable";
     private static final String URL_APPOINTMENTS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/appointments";
+    private static final String PATH_FIND_PATIENT = "/_api/api/v2/patient/search";
 
     private final WebClient webClient = WebClient.create();
+    private final SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd");
 
     public List<District> getDistricts(){
         DistrictsResponse response = webClient
@@ -131,6 +137,31 @@ public class ApiService {
             return response.getAppointments();
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    public String findPatient (Integer polyclinicId, String firstName, String lastName, String middleName, Date birthdate){
+        FindPatientResponse response = webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme(SCHEME)
+                        .host(HOST)
+                        .path(PATH_FIND_PATIENT)
+                        .queryParam("lpuId", polyclinicId)
+                        .queryParam("firstName", firstName)
+                        .queryParam("lastName", lastName)
+                        .queryParam("middleName", middleName)
+                        .queryParam("birthdate", dateFormater.format(birthdate))
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(FindPatientResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getPatient();
+        } else {
+            return "";
         }
     }
 }

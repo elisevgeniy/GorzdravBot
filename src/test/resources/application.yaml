@@ -1,0 +1,9 @@
+oms:
+patient:
+  name:
+    first:
+    middle:
+    last:
+  birthdate: YYYY-MM-DD
+  polyclinicId:
+  result:

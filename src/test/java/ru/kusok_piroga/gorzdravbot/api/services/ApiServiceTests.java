@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.kusok_piroga.gorzdravbot.api.models.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,6 +17,18 @@ class ApiServiceTests {
 
     @Value("${oms}")
     private String omsNumber;
+    @Value("${patient.name.first}")
+    private String patientFirstName;
+    @Value("${patient.name.last}")
+    private String patientLastName;
+    @Value("${patient.name.middle}")
+    private String patientMiddleName;
+    @Value("${patient.polyclinicId}")
+    private Integer patientPolyclinicId;
+    @Value("${patient.birthdate}")
+    private String patientBirthdateStr;
+    @Value("${patient.result}")
+    private String patientResult;
 
     ApiService apiService = new ApiService();
 
@@ -79,5 +94,20 @@ class ApiServiceTests {
         List<Appointment> appointments = apiService.getAppointments(polyclinicId, doctorId);
         assertThat(appointments).withFailMessage("Список талончиков не должен быть пустым")
                 .isNotEmpty();
+    }
+
+    @Test
+    void testFindPatient(){
+        Date patientBirthday = new Date();
+        try {
+            patientBirthday = (new SimpleDateFormat("yyyy-MM-dd")).parse(patientBirthdateStr);
+        } catch (ParseException e) {
+            throw new AssertionError("Date parse fail");
+        }
+        String patient = apiService.findPatient(patientPolyclinicId, patientFirstName, patientLastName, patientMiddleName, patientBirthday);
+        assertThat(patient).withFailMessage("Пациент должен быть найден")
+                .isNotBlank();
+        assertThat(patient).withFailMessage("Пациент не тот")
+                .isEqualTo(patientResult);
     }
 }
