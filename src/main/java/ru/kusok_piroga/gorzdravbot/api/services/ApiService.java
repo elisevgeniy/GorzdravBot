@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import ru.kusok_piroga.gorzdravbot.api.models.*;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +23,10 @@ public class ApiService {
     private static final String URL_SPECIALTIES = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/specialties";
     private static final String URL_DOCTORS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/speciality/{specialtyId}/doctors";
     private static final String URL_TIMETABLES = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/timetable";
-    private static final String URL_APPOINTMENTS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/appointments";
+    private static final String URL_APPOINTMENTS = "https://gorzdrav.spb.ru/_api/api/v2/schedule/lpu/{lpuId}/doctor/{doctorId}/availableAppointments";
+    private static final String URL_CREATE_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointment/create";
+    private static final String URL_CANCEL_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointment/cancel";
+    private static final String URL_FIND_FUTURE_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointments?lpuId={lpuId}&patientId={patientId}";
     private static final String PATH_FIND_PATIENT = "/_api/api/v2/patient/search";
 
     private final WebClient webClient = WebClient.create();
@@ -124,13 +128,13 @@ public class ApiService {
         }
     }
 
-    public List<Appointment> getAppointments(Integer polyclinicId, String doctorId){
-        AppointmentsResponse response = webClient
+    public List<AvailableAppointment> getAvailableAppointments(Integer polyclinicId, String doctorId){
+        AvailableAppointmentsResponse response = webClient
                 .get()
                 .uri(URL_APPOINTMENTS, polyclinicId, doctorId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(AppointmentsResponse.class)
+                .bodyToMono(AvailableAppointmentsResponse.class)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -140,7 +144,7 @@ public class ApiService {
         }
     }
 
-    public String findPatient (Integer polyclinicId, String firstName, String lastName, String middleName, Date birthdate){
+    public String getPatientId(Integer polyclinicId, String firstName, String lastName, String middleName, Date birthdate){
         FindPatientResponse response = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -159,9 +163,63 @@ public class ApiService {
                 .block();
 
         if (response != null && response.isSuccess()){
-            return response.getPatient();
+            return response.getPatientId();
         } else {
             return "";
+        }
+    }
+
+    public boolean createAppointment (Integer polyclinicId, String appointmentId, String patientId){
+        AppointmentActionRequestBody body = new AppointmentActionRequestBody(polyclinicId, patientId, appointmentId);
+        BaseResponse response = webClient
+                .post()
+                .uri(URL_CREATE_APPOINTMENT)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), AppointmentActionRequestBody.class)
+                .retrieve()
+                .bodyToMono(BaseResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.isSuccess();
+        } else {
+            return false;
+        }
+    }
+
+    public boolean cancelAppointment (Integer polyclinicId, String appointmentId, String patientId){
+        AppointmentActionRequestBody body = new AppointmentActionRequestBody(polyclinicId, patientId, appointmentId);
+        CancelAppointmentResponse response = webClient
+                .post()
+                .uri(URL_CANCEL_APPOINTMENT)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), AppointmentActionRequestBody.class)
+                .retrieve()
+                .bodyToMono(CancelAppointmentResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.isCanceled();
+        } else {
+            return false;
+        }
+    }
+
+    public List<FutureAppointment> getFutureAppointments (Integer polyclinicId, String patientId){
+        FutureAppointmentsResponse response = webClient
+                .get()
+                .uri(URL_FIND_FUTURE_APPOINTMENT, polyclinicId, patientId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(FutureAppointmentsResponse.class)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return response.getAppointments();
+        } else {
+            return Collections.emptyList();
         }
     }
 }

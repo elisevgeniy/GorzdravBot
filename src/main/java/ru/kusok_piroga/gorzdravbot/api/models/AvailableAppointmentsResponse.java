@@ -2,14 +2,14 @@ package ru.kusok_piroga.gorzdravbot.api.models;
 
 import java.util.List;
 
-public record AppointmentsResponse(
-        List<Appointment> result,
+public record AvailableAppointmentsResponse(
+        List<AvailableAppointment> result,
         Boolean success,
         Integer errorCode,
         String message,
         String stackTrace
 ) {
-    public List<Appointment> getAppointments() {
+    public List<AvailableAppointment> getAppointments() {
         return result;
     }
     public boolean isSuccess() {

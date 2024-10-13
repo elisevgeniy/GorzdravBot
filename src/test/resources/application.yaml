@@ -6,4 +6,5 @@ patient:
     last:
   birthdate: YYYY-MM-DD
   polyclinicId:
-  result:
+  appointmentId:
+  id:

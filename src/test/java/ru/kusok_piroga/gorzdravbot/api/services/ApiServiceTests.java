@@ -23,12 +23,14 @@ class ApiServiceTests {
     private String patientLastName;
     @Value("${patient.name.middle}")
     private String patientMiddleName;
-    @Value("${patient.polyclinicId}")
-    private Integer patientPolyclinicId;
     @Value("${patient.birthdate}")
     private String patientBirthdateStr;
-    @Value("${patient.result}")
-    private String patientResult;
+    @Value("${patient.polyclinicId}")
+    private Integer patientPolyclinicId;
+    @Value("${patient.appointmentId}")
+    private String patientAppointmentId;
+    @Value("${patient.id}")
+    private String patientId;
 
     ApiService apiService = new ApiService();
 
@@ -91,23 +93,44 @@ class ApiServiceTests {
     void testAppointmentList(){
         int polyclinicId = 1;
         String doctorId = "3439";
-        List<Appointment> appointments = apiService.getAppointments(polyclinicId, doctorId);
-        assertThat(appointments).withFailMessage("Список талончиков не должен быть пустым")
+        List<AvailableAppointment> availableAppointments = apiService.getAvailableAppointments(polyclinicId, doctorId);
+        assertThat(availableAppointments).withFailMessage("Список талончиков не должен быть пустым")
                 .isNotEmpty();
     }
 
     @Test
-    void testFindPatient(){
+    void testGetPatientId(){
         Date patientBirthday = new Date();
         try {
             patientBirthday = (new SimpleDateFormat("yyyy-MM-dd")).parse(patientBirthdateStr);
         } catch (ParseException e) {
             throw new AssertionError("Date parse fail");
         }
-        String patient = apiService.findPatient(patientPolyclinicId, patientFirstName, patientLastName, patientMiddleName, patientBirthday);
+        String patient = apiService.getPatientId(patientPolyclinicId, patientFirstName, patientLastName, patientMiddleName, patientBirthday);
         assertThat(patient).withFailMessage("Пациент должен быть найден")
                 .isNotBlank();
         assertThat(patient).withFailMessage("Пациент не тот")
-                .isEqualTo(patientResult);
+                .isEqualTo(patientId);
+    }
+
+    @Test
+    void testGetFutureAppointments(){
+        List<FutureAppointment> futureAppointments = apiService.getFutureAppointments(patientPolyclinicId, patientId);
+        assertThat(futureAppointments).withFailMessage("Будущая запись должна быть найдена")
+                .isNotEmpty();
+    }
+
+    @Test
+    void testCreateAppointment(){
+        boolean isSuccess = apiService.createAppointment(patientPolyclinicId, patientAppointmentId, patientId);
+        assertThat(isSuccess).withFailMessage("Запрос должен обработаться успешно")
+                .isTrue();
+    }
+
+    @Test
+    void testCancelAppointment(){
+        boolean isCanceled = apiService.cancelAppointment(patientPolyclinicId, patientAppointmentId, patientId);
+        assertThat(isCanceled).withFailMessage("Запись должна отмениться")
+                .isTrue();
     }
 }
