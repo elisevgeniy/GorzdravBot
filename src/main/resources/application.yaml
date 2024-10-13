@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: GorzdravBot
+  config:
+    import: secrets.yaml
+drednote:
+#  telegram:
+#    name:
+#    token:
+    menu:
+      send-policy: on_startup
+      values:
+        start:
+          text: ????????? ????
+          command: start
+        add_patient:
+          text: ???????? ????????
+          command: addpatient
+        add_task:
+          text: ???????? ???????
+          command: addtask
