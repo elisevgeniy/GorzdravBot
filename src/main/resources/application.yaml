@@ -3,6 +3,13 @@ spring:
     name: GorzdravBot
   config:
     import: secrets.yaml
+  datasource:
+    url: jdbc:h2:mem:mydb
+#    username: user
+#    password: password
+    driverClassName: org.h2.Driver
+    jpa:
+      database-platform: org.hibernate.dialect.H2Dialect
 drednote:
 #  telegram:
 #    name:
@@ -11,11 +18,11 @@ drednote:
       send-policy: on_startup
       values:
         start:
-          text: ????????? ????
+          text: Запустить бота
           command: start
         add_patient:
-          text: ???????? ????????
+          text: Добавить пациента
           command: addpatient
         add_task:
-          text: ???????? ???????
+          text: Добавить задание
           command: addtask
