@@ -5,17 +5,13 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.kusok_piroga.gorzdravbot.api.models.District;
 import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.bot.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
 import java.util.*;
 
@@ -26,11 +22,8 @@ public class TaskService implements ICommandService {
     private final ApiService api;
     private final TaskRepository repository;
 
-    private UpdateRequest request;
-
     @Override
     public TelegramResponse execute(UpdateRequest request) {
-        this.request = request;
 
         Long dialogId = request.getChatId();
 
@@ -52,9 +45,7 @@ public class TaskService implements ICommandService {
                 buttons.get(buttons.size()-1).put(district.getName(), district.getId().toString());
             }
 
-            sendMessageWithInlineKeyboard(answerText.toString(), buttons);
-
-            return null;
+            return new InlineButtonTelegramResponse(answerText.toString(), buttons);
         } else {
             TaskEntity task = result.get();
             String message = request.getText();
@@ -84,45 +75,5 @@ public class TaskService implements ICommandService {
         }
 
         return new GenericTelegramResponse(answerText.toString());
-    }
-
-    private void sendMessageWithInlineKeyboard(String text, List<Map<String, String>> buttons) {
-
-        SendMessage message = SendMessage
-                .builder()
-                .chatId(request.getChatId())
-                .text(text)
-                .replyMarkup(InlineKeyboardMarkup
-                        .builder()
-                        .keyboard(buttons.stream()
-                                        .map(rowButtons -> new InlineKeyboardRow(
-//                                        rowButtons.toArray(new String[0])
-                                                rowButtons.entrySet().stream()
-                                                        .map(button -> InlineKeyboardButton
-                                                                .builder()
-                                                                .text(button.getKey())
-                                                                .callbackData(button.getValue())
-                                                                .build()
-                                                        ).toList()
-                                        )).toList()
-//                        .keyboardRow(
-//                                new InlineKeyboardRow(InlineKeyboardButton
-//                                        .builder()
-//                                        .text("Update message text")
-//                                        .callbackData("update_msg_text")
-//                                        .build()
-//                                )
-//                        )
-//                        .build()
-                        )
-                        .build())
-                .build();
-
-
-        try {
-            request.getAbsSender().execute(message); // Sending our message object to user
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 }
