@@ -1,26 +1,40 @@
 package ru.kusok_piroga.gorzdravbot.bot.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
 
 @Entity
 @Table(name="tasks")
-@Data
+@Getter
+@Setter
 public class TaskEntity {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    Long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
-    TaskState state;
+    private TaskState state;
 
-    Long dialogId;
+    private Long dialogId;
 
-    Integer districtId;
+    private Integer districtId;
 
-    Integer polyclinicId;
+    private Integer polyclinicId;
 
-    Integer specialityId;
+    private Integer specialityId;
 
-    String  doctorId;
+    private String  doctorId;
+
+    private String lowTimeLimit;
+
+    private String highTimeLimit;
+
+    private Date highDateLimit;
+
+    private Date lastNotify;
+
+    private Boolean completed = false;
 }

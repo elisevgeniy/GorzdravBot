@@ -16,6 +16,8 @@ import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.bot.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -33,7 +35,11 @@ public class TaskService implements ICommandService {
         Optional<TaskEntity> result = repository.findFirstByDialogIdAndStateIsNot(dialogId, TaskState.FINAL);
 
         if (result.isEmpty()) {
-            return taskCreate(dialogId);
+            if (request.getMessage().isCommand()) {
+                return taskCreate(dialogId);
+            } else {
+                return null;
+            }
         }
 
         return taskScenario(result.get(), request.getText());
@@ -65,6 +71,9 @@ public class TaskService implements ICommandService {
     private TelegramResponse taskScenario(TaskEntity task, String message) {
 
         switch (task.getState()) {
+            case INIT ->  {
+                return null;
+            }
             case SET_PATIENT -> {
                 return taskScenarioSetPatient(task, message);
             }
@@ -82,6 +91,9 @@ public class TaskService implements ICommandService {
             }
             case SET_TIME_LIMITS -> {
                 return taskScenarioSetTimeLimits(task, message);
+            }
+            case FINAL -> {
+                return null;
             }
         }
 
@@ -120,7 +132,38 @@ public class TaskService implements ICommandService {
     }
 
     private TelegramResponse taskScenarioSetTimeLimits(TaskEntity task, String message) {
-        return null;
+        if (message.length() == 5) {
+            if (message.matches("\\d\\d:\\d\\d")
+                    && Integer.parseInt(message.substring(0,2)) >= 0
+                    && Integer.parseInt(message.substring(0,2)) <= 24
+                    && Integer.parseInt(message.substring(3)) >= 0
+                    && Integer.parseInt(message.substring(3)) <= 59
+                ) {
+                if (task.getLowTimeLimit() == null) {
+                    task.setLowTimeLimit(message);
+                    repository.save(task);
+                    return new GenericTelegramResponse("Минимальное время записи установлено на %s".formatted(message));
+                } else if (task.getHighTimeLimit() == null) {
+                    task.setHighTimeLimit(message);
+                    repository.save(task);
+                    return new GenericTelegramResponse("Максимальное время записи установлено на %s".formatted(message));
+                }
+            } else {
+                return new GenericTelegramResponse("Ошибка формата времени, попробуйте ещё раз");
+            }
+        } else if (message.length() == 10) {
+            SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+            try {
+                task.setHighDateLimit(formater.parse(message));
+                task.setState(TaskState.FINAL);
+                repository.save(task);
+                return new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message));
+            } catch (ParseException e) {
+                return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
+            }
+        }
+
+        return new GenericTelegramResponse("Ошибка формата, попробуйте ещё раз");
     }
 
     private TelegramResponse taskScenarioSetPatient(TaskEntity task, String message) {
