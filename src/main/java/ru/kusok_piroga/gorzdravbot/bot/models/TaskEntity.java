@@ -21,4 +21,6 @@ public class TaskEntity {
     Integer polyclinicId;
 
     Integer specialityId;
+
+    String  doctorId;
 }

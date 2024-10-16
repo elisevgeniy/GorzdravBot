@@ -5,7 +5,8 @@ public enum TaskState {
     SET_PATIENT,
     SET_DISTRICT,
     SET_POLYCLINIC,
-    SET_SPECIALIST,
-    SET_TIME,
-    FINAL,
+    SET_SPECIALITY,
+    SET_DOCTOR,
+    SET_TIME_LIMITS,
+    FINAL
 }
