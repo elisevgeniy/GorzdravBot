@@ -26,8 +26,8 @@ public class MainController {
     }
 
     @TelegramCommand(COMMAND_ADD_TASK)
-    public TelegramResponse onAddTask(UpdateRequest request) {
-        return taskService.execute(request);
+    public TelegramResponse onAddNewTask(UpdateRequest request) {
+        return taskService.cleanStart(request);
     }
 
     @TelegramRequest(requestType = {RequestType.MESSAGE, RequestType.CALLBACK_QUERY})
