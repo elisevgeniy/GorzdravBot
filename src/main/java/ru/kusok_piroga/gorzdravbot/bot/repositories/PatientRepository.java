@@ -17,8 +17,12 @@ public interface PatientRepository extends CrudRepository<PatientEntity, Integer
     Optional<PatientEntity> findByDialogIdAndStateNot(Long dialogId, PatientState state);
 
 
-    @Query("select p from PatientEntity p where p.dialogId = ?1")
-    List<PatientEntity> findByDialogId(Long dialogId);
+    @Query("select p from PatientEntity p where p.dialogId = ?1 and p.state = ?2")
+    List<PatientEntity> findByDialogIdAndState(Long dialogId, PatientState state);
+
+    default List<PatientEntity> findCompletedByDialogId(Long dialogId){
+        return findByDialogIdAndState(dialogId, PatientState.COMPLETED);
+    }
 
     @Transactional
     @Modifying

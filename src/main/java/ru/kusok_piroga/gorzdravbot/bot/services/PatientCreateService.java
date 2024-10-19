@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.*;
 import ru.kusok_piroga.gorzdravbot.bot.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class PatientService implements ICommandService {
+public class PatientCreateService implements ICommandService {
 
     private final ApiService api;
     private final PatientRepository repository;
@@ -54,7 +55,7 @@ public class PatientService implements ICommandService {
     }
 
     private TelegramResponse patientScenario(PatientEntity patient, String message) {
-        if (message.isEmpty() || message.isBlank()){
+        if (message.isEmpty() || message.isBlank()) {
             return new GenericTelegramResponse("Требуется ввести текст (или начать заново с помощью " + Commands.COMMAND_ADD_PATIENT);
         }
 
@@ -107,7 +108,7 @@ public class PatientService implements ICommandService {
     private TelegramResponse patientScenarioSetBirthday(PatientEntity patient, String message) {
         SimpleDateFormat formaterFromMessage = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat formaterForBD = new SimpleDateFormat("yyyy-MM-dd");
-        formaterForBD.setLenient(false);
+        formaterFromMessage.setLenient(false);
         try {
             patient.setBirthday(formaterForBD.format(
                     formaterFromMessage.parse(message)
@@ -126,4 +127,26 @@ public class PatientService implements ICommandService {
         }
     }
 
+    public TelegramResponse printPatientList(long chatId) {
+        List<PatientEntity> patients = repository.findCompletedByDialogId(chatId);
+
+        if (patients.isEmpty()) {
+            return new GenericTelegramResponse("Пациенты не найдены. Добавить пациента можно с помощью " + Commands.COMMAND_ADD_PATIENT);
+        }
+
+        List<Map<String, String>> buttons = new ArrayList<>();
+        for (PatientEntity patient : patients){
+            buttons.add(new HashMap<>());
+            buttons.get(buttons.size()-1).put(
+                    "%s %s %s".formatted(
+                            patient.getSecondName(),
+                            patient.getFirstName(),
+                            patient.getMiddleName()
+                    ),
+                    patient.getId().toString()
+            );
+        }
+
+        return new InlineButtonTelegramResponse("Список пациентов:", buttons);
+    }
 }

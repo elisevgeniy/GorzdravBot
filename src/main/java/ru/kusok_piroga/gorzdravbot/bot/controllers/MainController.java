@@ -5,11 +5,7 @@ import io.github.drednote.telegram.core.request.RequestType;
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
-import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.bot.services.LastCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.PatientService;
-import ru.kusok_piroga.gorzdravbot.bot.services.StartService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskService;
+import ru.kusok_piroga.gorzdravbot.bot.services.*;
 
 import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 
@@ -17,11 +13,12 @@ import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final ApiService api;
     private final LastCommandService lastCommandService;
     private final TaskService taskService;
     private final StartService startService;
-    private final PatientService patientService;
+    private final PatientCreateService patientCreateService;
+    private final PatientDeleteService patientDeleteService;
+    private final PatientListService patientListService;
 
     @TelegramCommand(COMMAND_START)
     public TelegramResponse onStart(UpdateRequest request) {
@@ -35,7 +32,18 @@ public class MainController {
 
     @TelegramCommand(COMMAND_ADD_PATIENT)
     public TelegramResponse onAddNewPatient(UpdateRequest request) {
-        return patientService.cleanStart(request);
+        return patientCreateService.cleanStart(request);
+    }
+
+    @TelegramCommand(COMMAND_LIST_PATIENT)
+    public TelegramResponse onListPatient(UpdateRequest request) {
+        return patientListService.execute(request);
+    }
+
+
+    @TelegramCommand(COMMAND_DELETE_PATIENT)
+    public TelegramResponse onDeletePatient(UpdateRequest request) {
+        return patientDeleteService.execute(request);
     }
 
     @TelegramRequest(requestType = {RequestType.MESSAGE, RequestType.CALLBACK_QUERY})

@@ -11,7 +11,7 @@ spring:
     jpa:
       database-platform: org.hibernate.dialect.H2Dialect
 drednote:
-#  telegram:
+  telegram:
 #    name:
 #    token:
     menu:
@@ -23,6 +23,12 @@ drednote:
         add_patient:
           text: Добавить пациента
           command: addpatient
+        list_patient:
+          text: Список пациентов
+          command: listpatient
+        delete_patient:
+          text: Удалить пациента
+          command: deletepatient
         add_task:
           text: Добавить задание
           command: addtask
