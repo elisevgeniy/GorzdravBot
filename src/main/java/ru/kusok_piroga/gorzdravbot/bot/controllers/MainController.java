@@ -5,9 +5,10 @@ import io.github.drednote.telegram.core.request.RequestType;
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.services.LastCommandService;
+import ru.kusok_piroga.gorzdravbot.bot.services.PatientService;
+import ru.kusok_piroga.gorzdravbot.bot.services.StartService;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskService;
 
 import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
@@ -19,15 +20,22 @@ public class MainController {
     private final ApiService api;
     private final LastCommandService lastCommandService;
     private final TaskService taskService;
+    private final StartService startService;
+    private final PatientService patientService;
 
     @TelegramCommand(COMMAND_START)
-    public String onStart(User user) {
-        return "Приветствую!\nДля возможности записаться требуется добавить пациента.\nЭто можно сделать командой /add_patient";
+    public TelegramResponse onStart(UpdateRequest request) {
+        return startService.execute(request);
     }
 
     @TelegramCommand(COMMAND_ADD_TASK)
     public TelegramResponse onAddNewTask(UpdateRequest request) {
         return taskService.cleanStart(request);
+    }
+
+    @TelegramCommand(COMMAND_ADD_PATIENT)
+    public TelegramResponse onAddNewPatient(UpdateRequest request) {
+        return patientService.cleanStart(request);
     }
 
     @TelegramRequest(requestType = {RequestType.MESSAGE, RequestType.CALLBACK_QUERY})

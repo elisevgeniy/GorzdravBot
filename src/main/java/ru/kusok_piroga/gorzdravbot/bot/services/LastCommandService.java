@@ -12,6 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LastCommandService {
     private final TaskService taskService;
+    private final PatientService patientService;
     private final StartService startService;
     private final DialogRepository repository;
 
@@ -21,6 +22,7 @@ public class LastCommandService {
             System.out.println("Для чата %d последняя команда - %s".formatted(dialogId, lastCommand.get().getLastCommand()));
             return switch (lastCommand.get().getLastCommand()){
                 case Commands.COMMAND_ADD_TASK -> taskService;
+                case Commands.COMMAND_ADD_PATIENT -> patientService;
                 default -> startService;
             };
         }
