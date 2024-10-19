@@ -1,7 +1,9 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
 import io.github.drednote.telegram.core.request.UpdateRequest;
+import io.github.drednote.telegram.response.CompositeTelegramResponse;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
+import io.github.drednote.telegram.response.StreamTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,7 +73,7 @@ public class TaskService implements ICommandService {
     private TelegramResponse taskScenario(TaskEntity task, String message) {
 
         switch (task.getState()) {
-            case INIT ->  {
+            case INIT -> {
                 return null;
             }
             case SET_PATIENT -> {
@@ -134,11 +136,11 @@ public class TaskService implements ICommandService {
     private TelegramResponse taskScenarioSetTimeLimits(TaskEntity task, String message) {
         if (message.length() == 5) {
             if (message.matches("\\d\\d:\\d\\d")
-                    && Integer.parseInt(message.substring(0,2)) >= 0
-                    && Integer.parseInt(message.substring(0,2)) <= 24
+                    && Integer.parseInt(message.substring(0, 2)) >= 0
+                    && Integer.parseInt(message.substring(0, 2)) <= 24
                     && Integer.parseInt(message.substring(3)) >= 0
                     && Integer.parseInt(message.substring(3)) <= 59
-                ) {
+            ) {
                 if (task.getLowTimeLimit() == null) {
                     task.setLowTimeLimit(message);
                     repository.save(task);
@@ -171,17 +173,21 @@ public class TaskService implements ICommandService {
     }
 
     private TelegramResponse printPolyclinics(Integer distrinctId) {
-        String answerText = "Выберите мед. учреждение:";
-        List<Map<String, String>> buttons = new LinkedList<>();
-        for (Polyclinic polyclinic : api.getPolyclinicsByDistrict(distrinctId)) {
-            buttons.add(new HashMap<>());
-            buttons.get(buttons.size() - 1).put(polyclinic.lpuFullName() , polyclinic.id().toString());
+        List<Polyclinic> polyclinics = api.getPolyclinicsByDistrict(distrinctId);
+        if (polyclinics.isEmpty()) {
+            return new GenericTelegramResponse("Мед. учреждения не найдены");
         }
 
-        return (buttons.isEmpty()) ?
-                new GenericTelegramResponse("Мед. учреждения не найдены")
-                :
-                new InlineButtonTelegramResponse(answerText, buttons);
+        return new CompositeTelegramResponse(List.of(
+                new StreamTelegramResponse(polyclinics.stream().map(polyclinic ->
+                        "%s - %s%n(%s)".formatted(
+                                polyclinic.id().toString(),
+                                polyclinic.lpuFullName(),
+                                polyclinic.address()
+                        )
+                )),
+                new GenericTelegramResponse("Напишите номер мед.  учреждения:\n(можно использовать поиск)")
+                ));
     }
 
     private TelegramResponse printSpecialities(Integer polyclinicId) {
