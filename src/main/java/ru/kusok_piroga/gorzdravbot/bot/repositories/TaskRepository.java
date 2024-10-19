@@ -12,7 +12,7 @@ import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
 import java.util.Optional;
 
 @Repository
-    public interface TaskRepository extends CrudRepository<TaskEntity, Integer> {
+    public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
     Optional<TaskEntity> findFirstByDialogIdAndStateIsNot(@NonNull Long id, @NonNull TaskState state);
 
     @Transactional
