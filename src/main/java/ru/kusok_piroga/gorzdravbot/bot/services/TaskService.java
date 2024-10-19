@@ -135,37 +135,50 @@ public class TaskService implements ICommandService {
 
     private TelegramResponse taskScenarioSetTimeLimits(TaskEntity task, String message) {
         if (message.length() == 5) {
-            if (message.matches("\\d\\d:\\d\\d")
-                    && Integer.parseInt(message.substring(0, 2)) >= 0
-                    && Integer.parseInt(message.substring(0, 2)) <= 24
-                    && Integer.parseInt(message.substring(3)) >= 0
-                    && Integer.parseInt(message.substring(3)) <= 59
-            ) {
-                if (task.getLowTimeLimit() == null) {
-                    task.setLowTimeLimit(message);
-                    repository.save(task);
-                    return new GenericTelegramResponse("Минимальное время записи установлено на %s".formatted(message));
-                } else if (task.getHighTimeLimit() == null) {
-                    task.setHighTimeLimit(message);
-                    repository.save(task);
-                    return new GenericTelegramResponse("Максимальное время записи установлено на %s".formatted(message));
-                }
-            } else {
-                return new GenericTelegramResponse("Ошибка формата времени, попробуйте ещё раз");
-            }
+            return taskScenarioSetTime(task, message);
         } else if (message.length() == 10) {
-            SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
-            try {
-                task.setHighDateLimit(formater.parse(message));
-                task.setState(TaskState.FINAL);
+            return taskScenarioSetDate(task, message);
+        }
+        return new GenericTelegramResponse("Ошибка формата, попробуйте ещё раз");
+    }
+
+    private TelegramResponse taskScenarioSetTime(TaskEntity task, String message) {
+        if (TaskValidator.validateTime(message)) {
+            if (task.getLowTimeLimit() == null) {
+                task.setLowTimeLimit(message);
                 repository.save(task);
-                return new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message));
-            } catch (ParseException e) {
-                return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
+                return new GenericTelegramResponse("Минимальное время записи установлено на %s%n Введите максимальное время:".formatted(message));
+            } else if (task.getHighTimeLimit() == null) {
+
+                task.setHighTimeLimit(message);
+
+                if (!TaskValidator.validateTaskTimeLimits(task)) {
+                    TelegramResponse response = new GenericTelegramResponse("Лимиты были заданы неверно (min = %s, max = %s). Лимиты сброшены, установите заново.".formatted(task.getLowTimeLimit(), task.getHighTimeLimit()));
+                    task.setLowTimeLimit(null);
+                    task.setHighTimeLimit(null);
+                    repository.save(task);
+                    return response;
+                }
+
+                repository.save(task);
+
+                return new GenericTelegramResponse("Максимальное время записи установлено на %s%n Введите дату, до которой будут отслеживаться номерки:".formatted(message));
             }
         }
+        return new GenericTelegramResponse("Ошибка формата времени, попробуйте ещё раз");
+    }
 
-        return new GenericTelegramResponse("Ошибка формата, попробуйте ещё раз");
+    private TelegramResponse taskScenarioSetDate(TaskEntity task, String message) {
+        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+        formater.setLenient(false);
+        try {
+            task.setHighDateLimit(formater.parse(message));
+            task.setState(TaskState.FINAL);
+            repository.save(task);
+            return new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message));
+        } catch (ParseException e) {
+            return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
+        }
     }
 
     private TelegramResponse taskScenarioSetPatient(TaskEntity task, String message) {
@@ -187,7 +200,7 @@ public class TaskService implements ICommandService {
                         )
                 )),
                 new GenericTelegramResponse("Напишите номер мед.  учреждения:\n(можно использовать поиск)")
-                ));
+        ));
     }
 
     private TelegramResponse printSpecialities(Integer polyclinicId) {
