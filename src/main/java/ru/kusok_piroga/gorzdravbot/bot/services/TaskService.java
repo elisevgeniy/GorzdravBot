@@ -1,5 +1,6 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
+import io.github.drednote.telegram.core.request.MessageType;
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.CompositeTelegramResponse;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
@@ -37,7 +38,7 @@ public class TaskService implements ICommandService {
         Optional<TaskEntity> result = repository.findFirstByDialogIdAndStateIsNot(dialogId, TaskState.FINAL);
 
         if (result.isEmpty()) {
-            if (request.getMessage().isCommand()) {
+            if (request.getMessageTypes().contains(MessageType.COMMAND)) {
                 return taskCreate(dialogId);
             } else {
                 return null;
@@ -58,16 +59,7 @@ public class TaskService implements ICommandService {
         task.setDialogId(dialogId);
         task.setState(TaskState.SET_DISTRICT);
         repository.save(task);
-
-        String answerText = "Выберите район:";
-        List<Map<String, String>> buttons = new ArrayList<>();
-
-        for (District district : api.getDistricts()) {
-            buttons.add(new HashMap<>());
-            buttons.get(buttons.size() - 1).put(district.getName(), district.getId().toString());
-        }
-
-        return new InlineButtonTelegramResponse(answerText, buttons);
+        return printDistricts();
     }
 
     private TelegramResponse taskScenario(TaskEntity task, String message) {
@@ -183,6 +175,20 @@ public class TaskService implements ICommandService {
 
     private TelegramResponse taskScenarioSetPatient(TaskEntity task, String message) {
         return null;
+    }
+
+    private TelegramResponse printDistricts() {
+        String answerText = "Выберите район:";
+        List<Map<String, String>> buttons = new ArrayList<>();
+
+        for (District district : api.getDistricts()) {
+            if (buttons.isEmpty() || buttons.get(buttons.size() - 1).size() == 2) {
+                buttons.add(new TreeMap<>());
+            }
+            buttons.get(buttons.size() - 1).put(district.getName(), district.getId().toString());
+        }
+
+        return new InlineButtonTelegramResponse(answerText, buttons);
     }
 
     private TelegramResponse printPolyclinics(Integer distrinctId) {
