@@ -9,11 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
     public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
     Optional<TaskEntity> findFirstByDialogIdAndStateIsNot(@NonNull Long id, @NonNull TaskState state);
+
+    @Query("select t from TaskEntity t where t.dialogId = ?1 and t.state = ?2")
+    List<TaskEntity> findByDialogIdAndState(Long dialogId, TaskState state);
+
+    default List<TaskEntity> findAllByDialogId(Long dialogId){
+        return findByDialogIdAndState(dialogId, TaskState.FINAL);
+    }
 
     @Transactional
     @Modifying

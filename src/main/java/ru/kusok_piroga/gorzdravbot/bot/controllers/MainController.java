@@ -15,6 +15,8 @@ public class MainController {
 
     private final LastCommandService lastCommandService;
     private final TaskService taskService;
+    private final TaskListService taskListService;
+    private final TaskDeleteService taskDeleteService;
     private final StartService startService;
     private final PatientCreateService patientCreateService;
     private final PatientDeleteService patientDeleteService;
@@ -40,6 +42,15 @@ public class MainController {
         return patientListService.execute(request);
     }
 
+    @TelegramCommand(COMMAND_LIST_TASK)
+    public TelegramResponse onListTask(UpdateRequest request) {
+        return taskListService.execute(request);
+    }
+
+    @TelegramRequest(COMMAND_DELETE_TASK + "/{taskId}")
+    public void onListTask(@TelegramPatternVariable("taskId") String taskId, UpdateRequest request) {
+        taskDeleteService.deleteTask(taskId, request);
+    }
 
     @TelegramCommand(COMMAND_DELETE_PATIENT)
     public TelegramResponse onDeletePatient(UpdateRequest request) {

@@ -9,4 +9,6 @@ public class Commands {
     public static final String COMMAND_LIST_PATIENT = "/listpatient";
     public static final String COMMAND_DELETE_PATIENT = "/deletepatient";
     public static final String COMMAND_ADD_TASK = "/addtask";
+    public static final String COMMAND_LIST_TASK = "/listtask";
+    public static final String COMMAND_DELETE_TASK = "/deletetask";
 }

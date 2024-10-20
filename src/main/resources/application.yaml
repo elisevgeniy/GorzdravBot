@@ -32,6 +32,9 @@ drednote:
         add_patient:
           text: Добавить пациента
           command: addpatient
+        list_task:
+          text: Список заданий
+          command: listtask
         list_patient:
           text: Список пациентов
           command: listpatient
