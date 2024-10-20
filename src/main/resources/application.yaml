@@ -4,12 +4,18 @@ spring:
   config:
     import: secrets.yaml
   datasource:
-    url: jdbc:h2:mem:mydb
+    url: jdbc:postgresql://localhost:5432/gorzdrav_bot
 #    username: user
 #    password: password
-    driverClassName: org.h2.Driver
-    jpa:
-      database-platform: org.hibernate.dialect.H2Dialect
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+#    database: postgresql
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 drednote:
   telegram:
 #    name:
