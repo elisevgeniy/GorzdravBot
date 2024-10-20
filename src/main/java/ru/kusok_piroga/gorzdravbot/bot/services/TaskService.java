@@ -14,6 +14,7 @@ import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
+import ru.kusok_piroga.gorzdravbot.bot.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.bot.repositories.TaskRepository;
@@ -56,7 +57,7 @@ public class TaskService implements ICommandService {
     }
 
     private TelegramResponse taskCreate(long dialogId) {
-        if (patientListService.getPatientList(dialogId).isEmpty()){
+        if (patientListService.getPatientList(dialogId).isEmpty()) {
             return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
         }
 
@@ -73,9 +74,6 @@ public class TaskService implements ICommandService {
             case INIT -> {
                 return null;
             }
-            case SET_PATIENT -> {
-                return taskScenarioSetPatient(task, message);
-            }
             case SET_DISTRICT -> {
                 return taskScenarioSetDistrict(task, message);
             }
@@ -90,6 +88,9 @@ public class TaskService implements ICommandService {
             }
             case SET_TIME_LIMITS -> {
                 return taskScenarioSetTimeLimits(task, message);
+            }
+            case SET_PATIENT -> {
+                return taskScenarioSetPatient(task, message);
             }
             case FINAL -> {
                 return null;
@@ -170,16 +171,48 @@ public class TaskService implements ICommandService {
         formater.setLenient(false);
         try {
             task.setHighDateLimit(formater.parse(message));
-            task.setState(TaskState.FINAL);
+            task.setState(TaskState.SET_PATIENT);
             repository.save(task);
-            return new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message));
+            return new CompositeTelegramResponse(List.of(
+                    new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message)),
+                    patientListService.printPatientList(task.getDialogId())
+            ));
         } catch (ParseException e) {
             return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
         }
     }
 
     private TelegramResponse taskScenarioSetPatient(TaskEntity task, String message) {
-        return null;
+
+        Optional<PatientEntity> patient = patientListService.getPatientById(Long.parseLong(message));
+
+        if (patient.isEmpty()){
+            return new GenericTelegramResponse("Пациент не найден. Всё, кирдык, давай по-новой, но добавь пациента с помощью " + Commands.COMMAND_ADD_PATIENT);
+        }
+
+        String patientId = api.getPatientId(
+                task.getPolyclinicId(),
+                patient.get().getFirstName(),
+                patient.get().getSecondName(),
+                patient.get().getMiddleName(),
+                patient.get().getBirthday()
+        );
+
+        if (patientId.isEmpty()){
+            return new CompositeTelegramResponse(List.of(
+                    new GenericTelegramResponse("Пациент в мед. учреждении не найден. Выбери другого"),
+                    patientListService.printPatientList(task.getDialogId())
+            ));
+        }
+
+        patient.get().setPatientId(patientId);
+        patientListService.savePatient(patient.get());
+
+        task.setPatientEntity(patient.get());
+        task.setState(TaskState.FINAL);
+        repository.save(task);
+
+        return new GenericTelegramResponse("Задача создана");
     }
 
     private TelegramResponse printDistricts() {

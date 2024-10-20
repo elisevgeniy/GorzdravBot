@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "patients")
 @Getter
@@ -26,5 +28,5 @@ public class PatientEntity {
 
     private String patientId;
 
-    private String birthday;
+    private Date birthday;
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PatientRepository extends CrudRepository<PatientEntity, Integer> {
+public interface PatientRepository extends CrudRepository<PatientEntity, Long> {
     @Query("select p from PatientEntity p where p.dialogId = ?1 and p.state <> ?2")
     Optional<PatientEntity> findByDialogIdAndStateNot(Long dialogId, PatientState state);
 

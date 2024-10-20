@@ -36,5 +36,9 @@ public class TaskEntity {
 
     private Date lastNotify;
 
+    @ManyToOne
+    @JoinColumn(name="patient_id")
+    private PatientEntity patientEntity;
+
     private Boolean completed = false;
 }

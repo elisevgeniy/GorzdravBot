@@ -107,12 +107,11 @@ public class PatientCreateService implements ICommandService {
 
     private TelegramResponse patientScenarioSetBirthday(PatientEntity patient, String message) {
         SimpleDateFormat formaterFromMessage = new SimpleDateFormat("dd.MM.yyyy");
-        SimpleDateFormat formaterForBD = new SimpleDateFormat("yyyy-MM-dd");
         formaterFromMessage.setLenient(false);
         try {
-            patient.setBirthday(formaterForBD.format(
+            patient.setBirthday(
                     formaterFromMessage.parse(message)
-            ));
+            );
             repository.save(patient);
 
             return new GenericTelegramResponse("Добавлен - %s %s %s, дата рождения %s".formatted(

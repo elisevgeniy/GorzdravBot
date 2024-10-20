@@ -19,7 +19,7 @@ public class PatientDeleteService implements ICommandService {
 
         if (!request.getMessageTypes().contains(MessageType.COMMAND)
                 && request.getText() != null && !request.getText().isBlank() && !request.getText().isEmpty()) {
-            repository.deleteById(Integer.parseInt(request.getText()));
+            repository.deleteById(Long.parseLong(request.getText()));
         }
 
         return patientListService.printPatientList(request.getChatId());

@@ -23,6 +23,14 @@ public class PatientListService implements ICommandService {
         return printPatientList(request.getChatId());
     }
 
+    public Optional<PatientEntity>  getPatientById(long patientId) {
+        return repository.findById(patientId);
+    }
+
+    public void savePatient(PatientEntity patient) {
+        repository.save(patient);
+    }
+
     public List<PatientEntity>  getPatientList(long chatId) {
         return repository.findCompletedByDialogId(chatId);
     }
