@@ -23,8 +23,12 @@ public class PatientListService implements ICommandService {
         return printPatientList(request.getChatId());
     }
 
+    public List<PatientEntity>  getPatientList(long chatId) {
+        return repository.findCompletedByDialogId(chatId);
+    }
+
     public TelegramResponse printPatientList(long chatId) {
-        List<PatientEntity> patients = repository.findCompletedByDialogId(chatId);
+        List<PatientEntity> patients = getPatientList(chatId);
 
         if (patients.isEmpty()) {
             return new GenericTelegramResponse("Пациенты не найдены. Добавить пациента можно с помощью " + Commands.COMMAND_ADD_PATIENT);

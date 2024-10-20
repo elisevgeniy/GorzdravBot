@@ -28,6 +28,7 @@ import java.util.*;
 public class TaskService implements ICommandService {
 
     private final ApiService api;
+    private final PatientListService patientListService;
     private final TaskRepository repository;
 
     @Override
@@ -55,6 +56,10 @@ public class TaskService implements ICommandService {
     }
 
     private TelegramResponse taskCreate(long dialogId) {
+        if (patientListService.getPatientList(dialogId).isEmpty()){
+            return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
+        }
+
         TaskEntity task = new TaskEntity();
         task.setDialogId(dialogId);
         task.setState(TaskState.SET_DISTRICT);
