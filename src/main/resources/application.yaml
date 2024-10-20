@@ -20,6 +20,9 @@ drednote:
         start:
           text: Запустить бота
           command: start
+        add_task:
+          text: Добавить задание
+          command: addtask
         add_patient:
           text: Добавить пациента
           command: addpatient
@@ -29,6 +32,3 @@ drednote:
         delete_patient:
           text: Удалить пациента
           command: deletepatient
-        add_task:
-          text: Добавить задание
-          command: addtask
