@@ -14,10 +14,10 @@ import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.bot.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.bot.models.TaskState;
-import ru.kusok_piroga.gorzdravbot.bot.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
+import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.common.models.TaskState;
+import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
 import java.text.ParseException;

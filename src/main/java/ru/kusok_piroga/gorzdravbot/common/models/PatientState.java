@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.bot.models;
+package ru.kusok_piroga.gorzdravbot.common.models;
 
 public enum PatientState {
     INIT,

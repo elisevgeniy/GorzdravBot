@@ -5,7 +5,7 @@ import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
 
 @Service
 @RequiredArgsConstructor

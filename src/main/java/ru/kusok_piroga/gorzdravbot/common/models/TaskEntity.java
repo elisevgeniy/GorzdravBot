@@ -1,5 +1,6 @@
-package ru.kusok_piroga.gorzdravbot.bot.models;
+package ru.kusok_piroga.gorzdravbot.common.models;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,5 +41,6 @@ public class TaskEntity {
     @JoinColumn(name="patient_id")
     private PatientEntity patientEntity;
 
+    @Nonnull
     private Boolean completed = false;
 }

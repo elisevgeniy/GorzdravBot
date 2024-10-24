@@ -7,8 +7,8 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.bot.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
 import java.text.DateFormat;
@@ -20,6 +20,15 @@ import java.util.*;
 public class TaskListService implements ICommandService {
 
     private final TaskRepository repository;
+
+    private static final String MESSAGE_TEXT = """
+                                            Задание №%d
+                                            ФИО: %s %s %s 
+                                            Др: %s
+                                            Условия записи: между %s и %s до %s
+                                            Поликлиника: %s
+                                            Специалист: %s
+                                            Врач: %s""";
 
     @Override
     public TelegramResponse execute(UpdateRequest request) {
@@ -43,14 +52,7 @@ public class TaskListService implements ICommandService {
                             Map<String, String> buttons = new HashMap<>();
                             buttons.put("Удалить задачу " + task.getId(), Commands.COMMAND_DELETE_TASK + "/" + task.getId());
                             return new InlineButtonTelegramResponse(
-                                    """
-                                            Задание №%d
-                                            ФИО: %s %s %s 
-                                            Др: %s
-                                            Условия записи: между %s и %s до %s
-                                            Поликлиника: %s
-                                            Специалист: %s
-                                            Врач: %s""".formatted(
+                                    MESSAGE_TEXT.formatted(
                                             task.getId(),
                                             task.getPatientEntity().getSecondName(),
                                             task.getPatientEntity().getFirstName(),
