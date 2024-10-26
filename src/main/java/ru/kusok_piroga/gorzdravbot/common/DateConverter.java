@@ -10,14 +10,14 @@ import java.util.Date;
 
 @UtilityClass
 public class DateConverter {
-    private static String getPrintableDate(Date date) {
+    private static String getPrintableDateTime(Date date) {
         SimpleDateFormat printableFormatter = new SimpleDateFormat("dd.MM.yyyy в HH:mm");
         return printableFormatter.format(date);
     }
 
-    public static String getPrintableAppointmentDate(String dateStr) {
+    public static String getPrintableAppointmentDateTime(String dateStr) {
         try {
-            return getPrintableDate(parseAppointmentDate(dateStr));
+            return getPrintableDateTime(parseAppointmentDate(dateStr));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

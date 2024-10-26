@@ -1,9 +1,9 @@
-package ru.kusok_piroga.gorzdravbot.recorder.models;
+package ru.kusok_piroga.gorzdravbot.common.models.actionbuttons;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public record NotifyToChatData(long taskId, String appointmentId) {
+public record CancelButtonData (String act, long taskId, String appmntId) {
 
     @Override
     public String toString() {

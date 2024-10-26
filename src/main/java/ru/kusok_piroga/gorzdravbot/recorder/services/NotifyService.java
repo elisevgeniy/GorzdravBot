@@ -15,7 +15,7 @@ import ru.kusok_piroga.gorzdravbot.recorder.models.NotifyToChatData;
 import java.util.Calendar;
 import java.util.List;
 
-import static ru.kusok_piroga.gorzdravbot.common.DateConverter.getPrintableAppointmentDate;
+import static ru.kusok_piroga.gorzdravbot.common.DateConverter.getPrintableAppointmentDateTime;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_UNIT;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_VALUE;
 
@@ -36,15 +36,18 @@ public class NotifyService {
                         .formatted(
                                 DELAY_FOR_RECORD_VALUE,
                                 (DELAY_FOR_RECORD_UNIT == Calendar.MINUTE) ? "мин." : "ед. времени",
-                                getPrintableAppointmentDate(availableAppointments.get(0).visitStart())))
+                                getPrintableAppointmentDateTime(availableAppointments.get(0).visitStart())))
                 .replyMarkup(InlineKeyboardMarkup
                         .builder()
                         .keyboard(availableAppointments.stream()
                                 .map(availableAppointment -> new InlineKeyboardRow(
                                         InlineKeyboardButton
                                                 .builder()
-                                                .text(getPrintableAppointmentDate(availableAppointment.visitStart()))
-                                                .callbackData(new NotifyToChatData(task.getId(), availableAppointment.id()).toString())
+                                                .text(getPrintableAppointmentDateTime(availableAppointment.visitStart()))
+                                                .callbackData(
+                                                        new NotifyToChatData(task.getId(), availableAppointment.id())
+                                                                .toString()
+                                                )
                                                 .build()
                                 )).toList()
                         )

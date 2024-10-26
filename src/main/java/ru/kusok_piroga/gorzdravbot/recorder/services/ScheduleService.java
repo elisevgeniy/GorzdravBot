@@ -23,8 +23,8 @@ public class ScheduleService {
     private final RecordService recordService;
 
     @Async
-    @Scheduled(cron = "0 */5 * * * *")
-//    @Scheduled(cron = "* * * * * *")
+//    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "*/20 * * * * *")
     public void scheduleExecute() {
         log.info("Scheduled execution start");
 
