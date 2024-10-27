@@ -6,8 +6,8 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.bot.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.bot.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
+import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
 import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
 
 import java.util.*;

@@ -1,7 +1,7 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
 import lombok.experimental.UtilityClass;
-import ru.kusok_piroga.gorzdravbot.bot.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 
 @UtilityClass
 public class TaskValidator {
