@@ -11,15 +11,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.models.actionbuttons.CancelButtonData;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static ru.kusok_piroga.gorzdravbot.common.DateConverter.getPrintableAppointmentDateTime;
+import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintableAppointmentDateTime;
 
 @Service
 @Slf4j
@@ -115,10 +115,9 @@ public class RecordService {
     }
 
     private String cancelButtonData(TaskEntity task, AvailableAppointment appointment){
-        return (new CancelButtonData(
-                "Cancel",
-                task.getId(),
-                appointment.id()
+        return (new CallbackData(
+                "app_cncl",
+                List.of(task.getId().toString(), appointment.id()).toString()
         )).toString();
     }
 }

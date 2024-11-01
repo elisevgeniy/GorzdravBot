@@ -5,8 +5,8 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteService;
-import ru.kusok_piroga.gorzdravbot.common.DeleteMessageTelegramResponse;
-import ru.kusok_piroga.gorzdravbot.common.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.common.responses.DeleteMessageTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 
 @Component
 @RequiredArgsConstructor

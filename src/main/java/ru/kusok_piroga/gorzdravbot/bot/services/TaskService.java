@@ -18,7 +18,7 @@ import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

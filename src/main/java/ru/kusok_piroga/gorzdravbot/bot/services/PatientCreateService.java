@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.*;
 import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
-import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.common.models.PatientState;
 

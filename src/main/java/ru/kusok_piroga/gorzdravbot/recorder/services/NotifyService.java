@@ -15,7 +15,7 @@ import ru.kusok_piroga.gorzdravbot.recorder.models.NotifyToChatData;
 import java.util.Calendar;
 import java.util.List;
 
-import static ru.kusok_piroga.gorzdravbot.common.DateConverter.getPrintableAppointmentDateTime;
+import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintableAppointmentDateTime;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_UNIT;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_VALUE;
 

@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.bot.controllers;
+package ru.kusok_piroga.gorzdravbot.bot.filters;
 
 import io.github.drednote.telegram.core.annotation.TelegramScope;
 import io.github.drednote.telegram.core.request.UpdateRequest;

@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static ru.kusok_piroga.gorzdravbot.common.DateConverter.*;
+import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.*;
 
 @Service
 @RequiredArgsConstructor

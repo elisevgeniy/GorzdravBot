@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.common;
+package ru.kusok_piroga.gorzdravbot.common.utils;
 
 
 import lombok.experimental.UtilityClass;

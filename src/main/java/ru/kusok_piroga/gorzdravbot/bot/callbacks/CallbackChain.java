@@ -4,7 +4,7 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import ru.kusok_piroga.gorzdravbot.common.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 
 @Component
 public class CallbackChain {

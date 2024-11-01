@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.common;
+package ru.kusok_piroga.gorzdravbot.common.responses;
 
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.AbstractTelegramResponse;

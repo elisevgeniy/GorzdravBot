@@ -1,9 +1,9 @@
-package ru.kusok_piroga.gorzdravbot.common;
+package ru.kusok_piroga.gorzdravbot.bot.callbacks.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
-import ru.kusok_piroga.gorzdravbot.common.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 
 import java.util.Optional;
 

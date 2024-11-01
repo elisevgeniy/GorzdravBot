@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.TaskCallbackChain;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.common.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.common.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
