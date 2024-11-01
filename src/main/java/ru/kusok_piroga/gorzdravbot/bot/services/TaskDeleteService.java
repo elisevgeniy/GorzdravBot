@@ -26,4 +26,8 @@ public class TaskDeleteService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteTask(String taskId) {
+        repository.deleteById(Long.parseLong(taskId));
+    }
 }

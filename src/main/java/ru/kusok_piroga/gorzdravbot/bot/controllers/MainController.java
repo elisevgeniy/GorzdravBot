@@ -5,7 +5,12 @@ import io.github.drednote.telegram.core.request.RequestType;
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.CallbackChain;
 import ru.kusok_piroga.gorzdravbot.bot.services.*;
+import ru.kusok_piroga.gorzdravbot.common.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.common.models.CallbackData;
+
+import java.util.Optional;
 
 import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 
@@ -21,6 +26,8 @@ public class MainController {
     private final PatientCreateService patientCreateService;
     private final PatientDeleteService patientDeleteService;
     private final PatientListService patientListService;
+
+    private final CallbackChain callbackChain;
 
     @TelegramCommand(COMMAND_START)
     public TelegramResponse onStart(UpdateRequest request) {
@@ -57,8 +64,19 @@ public class MainController {
         return patientDeleteService.execute(request);
     }
 
-    @TelegramRequest(requestType = {RequestType.MESSAGE, RequestType.CALLBACK_QUERY})
-    public TelegramResponse onAnyString(UpdateRequest request){
+    @TelegramRequest(requestType = {RequestType.CALLBACK_QUERY})
+    public TelegramResponse onAnyCallback(UpdateRequest request){
+        Optional<CallbackData> callbackData = CallbackEncoder.decode(request.getText());
+
+        if (callbackData.isEmpty()){
+            return onAnyMessage(request);
+        }
+
+        return callbackChain.run(callbackData.get());
+
+    }
+    @TelegramRequest(requestType = {RequestType.MESSAGE})
+    public TelegramResponse onAnyMessage(UpdateRequest request){
         return lastCommandService.getLastCommandService(request.getChatId())
                 .execute(request);
     }
