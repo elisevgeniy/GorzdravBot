@@ -23,9 +23,6 @@ drednote:
     menu:
       send-policy: on_startup
       values:
-        start:
-          text: Запустить бота
-          command: start
         add_task:
           text: Добавить задание
           command: addtask
@@ -38,6 +35,6 @@ drednote:
         list_patient:
           text: Список пациентов
           command: listpatient
-        delete_patient:
-          text: Удалить пациента
-          command: deletepatient
+        start:
+          text: Запустить бота
+          command: start
