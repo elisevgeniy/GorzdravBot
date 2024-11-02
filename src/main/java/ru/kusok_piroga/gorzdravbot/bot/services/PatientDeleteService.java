@@ -4,9 +4,12 @@ import io.github.drednote.telegram.core.request.MessageType;
 import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PatientDeleteService implements ICommandService {
@@ -18,10 +21,23 @@ public class PatientDeleteService implements ICommandService {
     public TelegramResponse execute(UpdateRequest request) {
 
         if (!request.getMessageTypes().contains(MessageType.COMMAND)
-                && request.getText() != null && !request.getText().isBlank() && !request.getText().isEmpty()) {
-            repository.deleteById(Long.parseLong(request.getText()));
+                && request.getText() != null) {
+            deletePatient(request.getText());
         }
 
         return patientListService.printPatientList(request.getChatId());
+    }
+
+    public void deletePatient(String idStr){
+            try {
+                deletePatient(Long.parseLong(idStr));
+            } catch (NumberFormatException e){
+                log.error("Wrong patient id: {}", idStr);
+            }
+    }
+
+    public void deletePatient(@NonNull Long id){
+        log.info("Delete patient id: {}", id);
+        repository.deleteById(id);
     }
 }
