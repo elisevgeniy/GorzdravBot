@@ -6,7 +6,7 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.PatientCallbackChain;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.PatientCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
@@ -57,7 +57,7 @@ public class PatientListService implements ICommandService {
         buttons.get(buttons.size()-1).put(
                 "Удалить",
                 CallbackEncoder.encode(
-                        PatientCallbackChain.FN_DELETE,
+                        PatientCallbackUnit.FN_DELETE,
                         patient.getId()
                 )
         );

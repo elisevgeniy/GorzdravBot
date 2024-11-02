@@ -1,6 +1,6 @@
 package ru.kusok_piroga.gorzdravbot.bot.callbacks;
 
-public abstract class BaseCallbackChain implements ICallbackChainUnit {
+public abstract class BaseCallbackUnit implements ICallbackChainUnit {
 
     private ICallbackChainUnit next = null;
 

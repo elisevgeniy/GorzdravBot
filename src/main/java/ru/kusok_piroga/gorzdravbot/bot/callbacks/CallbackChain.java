@@ -24,7 +24,7 @@ public class CallbackChain {
             lastUnit = callbackChainUnit;
         });
 
-        lastUnit.setNext(new FinalCallbackChain());
+        lastUnit.setNext(new FinalCallbackUnit());
     }
 
     public TelegramResponse run(CallbackData data) {

@@ -10,7 +10,7 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 
 @Component
 @RequiredArgsConstructor
-public class TaskCallbackChain extends BaseCallbackChain {
+public class TaskCallbackUnit extends BaseCallbackUnit {
 
     private final TaskDeleteService taskDeleteService;
 

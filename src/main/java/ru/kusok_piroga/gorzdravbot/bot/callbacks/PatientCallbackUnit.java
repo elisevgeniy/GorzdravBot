@@ -12,7 +12,7 @@ import ru.kusok_piroga.gorzdravbot.common.responses.DeleteMessageTelegramRespons
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PatientCallbackChain extends BaseCallbackChain {
+public class PatientCallbackUnit extends BaseCallbackUnit {
 
     private final PatientDeleteService patientDeleteService;
 

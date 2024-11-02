@@ -4,7 +4,7 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 
-public class FinalCallbackChain extends BaseCallbackChain {
+public class FinalCallbackUnit extends BaseCallbackUnit {
 
     @Override
     public TelegramResponse execute(CallbackData data) {
