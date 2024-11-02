@@ -1,6 +1,7 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
 import io.github.drednote.telegram.core.request.UpdateRequest;
+import io.github.drednote.telegram.response.CompositeTelegramResponse;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,26 +45,29 @@ public class PatientListService implements ICommandService {
             return new GenericTelegramResponse("Пациенты не найдены. Добавить пациента можно с помощью " + Commands.COMMAND_ADD_PATIENT);
         }
 
-        List<Map<String, String>> buttons = new ArrayList<>();
-        for (PatientEntity patient : patients){
-            buttons.add(new TreeMap<>());
-            buttons.get(buttons.size()-1).put(
-                    "%s %s %s".formatted(
-                            patient.getSecondName(),
-                            patient.getFirstName(),
-                            patient.getMiddleName()
-                    ),
-                    "stub"
-            );
-            buttons.get(buttons.size()-1).put(
-                    "Удалить",
-                    CallbackEncoder.encode(
-                            PatientCallbackChain.FN_DELETE,
-                            patient.getId()
-                    )
-            );
-        }
+        return new CompositeTelegramResponse(List.of(
+                new GenericTelegramResponse("Список пациентов:"),
+                patients.stream().map(this::getPatientMessage).toList()
+        ));
+    }
 
-        return new InlineButtonTelegramResponse("Список пациентов:", buttons);
+    private TelegramResponse getPatientMessage(PatientEntity patient){
+        List<Map<String, String>> buttons = new ArrayList<>();
+        buttons.add(new TreeMap<>());
+        buttons.get(buttons.size()-1).put(
+                "Удалить",
+                CallbackEncoder.encode(
+                        PatientCallbackChain.FN_DELETE,
+                        patient.getId()
+                )
+        );
+        return new InlineButtonTelegramResponse(
+                "%s %s %s".formatted(
+                        patient.getSecondName(),
+                        patient.getFirstName(),
+                        patient.getMiddleName()
+                ),
+                buttons
+        );
     }
 }
