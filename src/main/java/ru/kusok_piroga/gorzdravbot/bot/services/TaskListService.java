@@ -6,9 +6,9 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.TaskCallbackChain;
+import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
@@ -22,6 +22,7 @@ import java.util.*;
 public class TaskListService implements ICommandService {
 
     private final TaskRepository repository;
+    private final CallbackEncoder callbackEncoder;
 
     private static final String MESSAGE_TEXT = """
                                             Задание №%d
@@ -53,7 +54,7 @@ public class TaskListService implements ICommandService {
                 .map(task -> {
                             Map<String, String> buttons = new HashMap<>();
                             buttons.put("Удалить задачу " + task.getId(),
-                                    CallbackEncoder.encode(
+                                    callbackEncoder.encode(
                                             TaskCallbackChain.FN_DELETE,
                                             task.getId()
                                     ));
