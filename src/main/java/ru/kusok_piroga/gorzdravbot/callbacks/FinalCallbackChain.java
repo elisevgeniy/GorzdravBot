@@ -1,8 +1,8 @@
-package ru.kusok_piroga.gorzdravbot.bot.callbacks;
+package ru.kusok_piroga.gorzdravbot.callbacks;
 
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.callbacks.models.CallbackData;
 
 public class FinalCallbackChain extends BaseCallbackChain {
 

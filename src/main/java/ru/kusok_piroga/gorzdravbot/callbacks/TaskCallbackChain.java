@@ -1,22 +1,21 @@
-package ru.kusok_piroga.gorzdravbot.bot.callbacks;
+package ru.kusok_piroga.gorzdravbot.callbacks;
 
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
-import ru.kusok_piroga.gorzdravbot.bot.services.PatientDeleteService;
+import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteService;
 import ru.kusok_piroga.gorzdravbot.common.responses.DeleteMessageTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.callbacks.models.CallbackData;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
-public class PatientCallbackChain extends BaseCallbackChain {
+public class TaskCallbackChain extends BaseCallbackChain {
 
-    private final PatientDeleteService patientDeleteService;
+    private final TaskDeleteService taskDeleteService;
 
-    public static final String FN_DELETE = "ptnt_del";
+    public static final String FN_DELETE = "tsk_del";
+    public static final String FN_RESTART = "tsk_up";
 
     @Override
     public TelegramResponse execute(CallbackData data) {
@@ -24,21 +23,20 @@ public class PatientCallbackChain extends BaseCallbackChain {
             return getNext().execute(data);
         }
 
-        log.info("Callback, fn = {}, data = {}", data.fn(), data.d());
-
         switch (data.fn()){
             case FN_DELETE:
-                patientDeleteService.deletePatient(data.d());
+                taskDeleteService.deleteTask(data.d());
                 return new DeleteMessageTelegramResponse();
+            case FN_RESTART:
+                return null;
             default:
-                log.info("Callback unknown fn");
                 return new GenericTelegramResponse("Ошибка значения callback");
         }
     }
 
     private boolean checkAffiliation(String function){
         switch (function){
-            case FN_DELETE:
+            case FN_DELETE, FN_RESTART:
                 return true;
             default:
                 return false;

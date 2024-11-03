@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 

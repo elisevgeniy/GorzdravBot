@@ -6,8 +6,8 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.PatientCallbackChain;
-import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.callbacks.PatientCallbackChain;
+import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
@@ -20,6 +20,7 @@ import java.util.*;
 public class PatientListService implements ICommandService {
 
     private final PatientRepository repository;
+    private final CallbackEncoder callbackEncoder;
 
     @Override
     public TelegramResponse execute(UpdateRequest request) {
@@ -56,7 +57,7 @@ public class PatientListService implements ICommandService {
         buttons.add(new TreeMap<>());
         buttons.get(buttons.size()-1).put(
                 "Удалить",
-                CallbackEncoder.encode(
+                callbackEncoder.encode(
                         PatientCallbackChain.FN_DELETE,
                         patient.getId()
                 )
