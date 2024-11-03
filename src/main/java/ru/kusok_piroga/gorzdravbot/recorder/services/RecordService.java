@@ -81,18 +81,49 @@ public class RecordService {
         return isAppointmentCreated;
     }
 
+    public boolean makeRecord(TaskEntity task, String appointmentId){
+        log.info("Task, id={}, making record", task.getId());
+        if (Boolean.TRUE.equals(task.getCompleted())){
+            log.info("Task, id={}, record fail, task already completed", task.getId());
+            return false;
+        }
+
+        boolean isAppointmentCreated = api.createAppointment(
+                task.getPolyclinicId(),
+                appointmentId,
+                task.getPatientEntity().getPatientId()
+        );
+
+        log.info("Task, id={}, record result = {}", task.getId(), isAppointmentCreated);
+
+        if (isAppointmentCreated){
+            task.setCompleted(true);
+            taskRepository.save(task);
+
+            messageToChat(task, "Вы записаны", appointmentId);
+        }
+
+        return isAppointmentCreated;
+    }
+
     private boolean messageToChat(TaskEntity task, AvailableAppointment appointment) {
-        SendMessage message = SendMessage
-                .builder()
-                .chatId(task.getDialogId())
-                .text("Вы записаны в поликлинику %s к %s, %s на %s"
+        return messageToChat(task,
+                "Вы записаны в поликлинику %s к %s, %s на %s"
                         .formatted(
                                 task.getPolyclinicId(),
                                 task.getDoctorId(),
                                 task.getSpecialityId(),
                                 getPrintableAppointmentDateTime(appointment.visitStart())
-                                )
-                )
+                        ),
+                appointment.id()
+        );
+    }
+
+    private boolean messageToChat(TaskEntity task, String message, String appointmentId) {
+        SendMessage telegramMessage = SendMessage
+                .builder()
+                .chatId(task.getDialogId())
+                .text(message)
                 .replyMarkup(InlineKeyboardMarkup
                         .builder()
                         .keyboard(List.of(
@@ -100,24 +131,24 @@ public class RecordService {
                                         InlineKeyboardButton
                                                 .builder()
                                                 .text("Отменить")
-                                                .callbackData(cancelButtonData(task, appointment))
+                                                .callbackData(cancelButtonData(task, appointmentId))
                                                 .build()
                                 )
                         ))
                         .build())
                 .build();
         try {
-            telegramClient.execute(message);
+            telegramClient.execute(telegramMessage);
             return true;
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String cancelButtonData(TaskEntity task, AvailableAppointment appointment){
+    private String cancelButtonData(TaskEntity task, String appointmentId){
         return (new CallbackData(
                 "app_cncl",
-                List.of(task.getId().toString(), appointment.id()).toString()
+                List.of(task.getId().toString(), appointmentId).toString()
         )).toString();
     }
 }

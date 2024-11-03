@@ -27,7 +27,7 @@ public class CallbackEncoder {
     public String encode(String functionName, Object data) {
         String dataStr = data.toString();
 
-        if (functionName.length() + dataStr.length() > 64 - 16) {
+        if (functionName.length() + dataStr.length() > 64 - 30) {
             return putToDB(functionName, data).toString();
         }
 
