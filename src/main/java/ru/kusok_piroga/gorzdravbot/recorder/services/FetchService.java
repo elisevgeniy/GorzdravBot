@@ -28,17 +28,23 @@ public class FetchService {
         }
 
         return availableAppointments.stream().filter(
-                availableAppointment -> checkLimitConstraint(availableAppointment.visitStart(), task.getLowTimeLimit(), task.getHighTimeLimit())
+                availableAppointment -> checkLimitConstraint(
+                        availableAppointment.visitStart(),
+                        task.getLowTimeLimit(),
+                        task.getHighTimeLimit(),
+                        task.getHighDateLimit()
+                )
         ).toList();
     }
-    private boolean checkLimitConstraint(String visitStart, String lowTimeLimitStr, String highTimeLimitStr) {
+    private boolean checkLimitConstraint(String visitStart, String lowTimeLimitStr, String highTimeLimitStr, Date highDateLimit) {
         DateFormat limitFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             Date visitStartTime = parseAppointmentDate(visitStart);
             Date lowTimeLimit = minusTenMin(limitFormatter.parse(visitStart.substring(0, 11) + lowTimeLimitStr));
             Date highTimeLimit = plusTenMin(limitFormatter.parse(visitStart.substring(0, 11) + highTimeLimitStr));
+            Date highDateLimitPlusDay = plusOneDay(highDateLimit);
 
-            return lowTimeLimit.before(visitStartTime) && visitStartTime.before(highTimeLimit);
+            return lowTimeLimit.before(visitStartTime) && visitStartTime.before(highTimeLimit) && visitStartTime.before(highDateLimitPlusDay);
 
         } catch (ParseException e) {
             return false;

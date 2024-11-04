@@ -28,6 +28,13 @@ public class DateConverter {
         return appointmentFormatter.parse(dateStr);
     }
 
+    public static Date plusOneDay(Date date) {
+        return changeDayCount(date, 1);
+    }
+
+    public static Date minusOneDay(Date date) {
+        return changeDayCount(date, -1);
+    }
 
     public static Date plusTenMin(Date date) {
         return changeMinCount(date, 10);
@@ -38,9 +45,17 @@ public class DateConverter {
     }
 
     private static Date changeMinCount(Date date, int mins) {
+        return changeUnitCount(date, mins, Calendar.MINUTE);
+    }
+
+    private static Date changeDayCount(Date date, int days) {
+        return changeUnitCount(date, days, Calendar.DAY_OF_MONTH);
+    }
+
+    private static Date changeUnitCount(Date date, int mins, int unit) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.MINUTE, mins);
+        calendar.add(unit, mins);
         return calendar.getTime();
     }
 }
