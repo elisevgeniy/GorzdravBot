@@ -1,6 +1,7 @@
 package ru.kusok_piroga.gorzdravbot.recorder.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -11,6 +12,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.recorder.callbacks.RecordCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.recorder.models.NotifyToChatData;
 
 import java.util.Calendar;
@@ -20,6 +22,7 @@ import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintabl
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_UNIT;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_VALUE;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotifyService {
@@ -48,7 +51,7 @@ public class NotifyService {
                                                 .text(getPrintableAppointmentDateTime(availableAppointment.visitStart()))
                                                 .callbackData(
                                                         callbackEncoder.encode(
-                                                                "rec",
+                                                                RecordCallbackUnit.FN_RECORD,
                                                                 new NotifyToChatData(task.getId(), availableAppointment.id())
                                                         )
                                                 )
@@ -61,6 +64,7 @@ public class NotifyService {
             telegramClient.execute(message);
             return true;
         } catch (TelegramApiException e) {
+            log.error("Send message error", e);
             return false;
         }
     }
