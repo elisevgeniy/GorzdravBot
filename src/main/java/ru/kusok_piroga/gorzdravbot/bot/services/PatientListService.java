@@ -51,6 +51,28 @@ public class PatientListService implements ICommandService {
                 patients.stream().map(this::getPatientMessage).toList()
         ));
     }
+    public TelegramResponse printPatientListForChoose(long chatId) {
+        List<PatientEntity> patients = getPatientList(chatId);
+
+        if (patients.isEmpty()) {
+            return new GenericTelegramResponse("Пациенты не найдены. Добавить пациента можно с помощью " + Commands.COMMAND_ADD_PATIENT);
+        }
+
+        List<Map<String, String>> buttons = new ArrayList<>();
+        for (PatientEntity patient : patients){
+            buttons.add(new HashMap<>());
+            buttons.get(buttons.size()-1).put(
+                    "%s %s %s".formatted(
+                            patient.getSecondName(),
+                            patient.getFirstName(),
+                            patient.getMiddleName()
+                    ),
+                    patient.getId().toString()
+            );
+        }
+
+        return new InlineButtonTelegramResponse("Выберите пациента:", buttons);
+    }
 
     private TelegramResponse getPatientMessage(PatientEntity patient){
         List<Map<String, String>> buttons = new ArrayList<>();

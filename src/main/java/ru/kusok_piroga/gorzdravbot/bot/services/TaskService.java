@@ -175,7 +175,7 @@ public class TaskService implements ICommandService {
             repository.save(task);
             return new CompositeTelegramResponse(List.of(
                     new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message)),
-                    patientListService.printPatientList(task.getDialogId())
+                    patientListService.printPatientListForChoose(task.getDialogId())
             ));
         } catch (ParseException e) {
             return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
@@ -201,7 +201,7 @@ public class TaskService implements ICommandService {
         if (patientId.isEmpty()){
             return new CompositeTelegramResponse(List.of(
                     new GenericTelegramResponse("Пациент в мед. учреждении не найден. Выбери другого"),
-                    patientListService.printPatientList(task.getDialogId())
+                    patientListService.printPatientListForChoose(task.getDialogId())
             ));
         }
 
