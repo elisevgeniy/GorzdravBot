@@ -19,8 +19,17 @@ import java.util.Optional;
     @Query("select t from TaskEntity t where t.completed = false and t.state = ?1")
     List<TaskEntity> findAllUncompletedTasksWithState(TaskState state);
 
+    @Query("select t from TaskEntity t where t.dialogId = ?1 and t.completed = ?2 and t.state = ?3")
+    List<TaskEntity> findTasksByDialogIdWithStateAndCompletedStatus(Long dialogId, Boolean completed, TaskState state);
+
     default List<TaskEntity> findAllUncompletedTasks(){
         return findAllUncompletedTasksWithState(TaskState.FINAL);
+    }
+    default List<TaskEntity> findAllCompletedTasksByDialogId(Long dialogId){
+        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, true, TaskState.FINAL);
+    }
+    default List<TaskEntity> findAllUncompletedTasksByDialogId(Long dialogId){
+        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, false, TaskState.FINAL);
     }
 
 

@@ -5,6 +5,7 @@ import io.github.drednote.telegram.response.CompositeTelegramResponse;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
@@ -25,59 +26,101 @@ public class TaskListService implements ICommandService {
     private final CallbackEncoder callbackEncoder;
 
     private static final String MESSAGE_TEXT = """
-                                            Задание №%d
-                                            ФИО: %s %s %s 
-                                            Др: %s
-                                            Условия записи: между %s и %s до %s
-                                            Поликлиника: %s
-                                            Специалист: %s
-                                            Врач: %s""";
+            Задание №%d
+            ФИО: %s %s %s 
+            Др: %s
+            Условия записи: между %s и %s до %s
+            Поликлиника: %s
+            Специалист: %s
+            Врач: %s""";
 
     @Override
     public TelegramResponse execute(UpdateRequest request) {
         return printTaskList(request.getChatId());
     }
 
-    public List<TaskEntity> getTaskList(long chatId) {
-        return repository.findAllByDialogId(chatId);
+    public List<TaskEntity> getCompletedTaskList(long chatId) {
+        return repository.findAllCompletedTasksByDialogId(chatId);
+    }
+
+    public List<TaskEntity> getUncompletedTaskList(long chatId) {
+        return repository.findAllUncompletedTasksByDialogId(chatId);
     }
 
     public TelegramResponse printTaskList(long chatId) {
-        List<TaskEntity> tasks = getTaskList(chatId);
+        List<TaskEntity> completedTasks = getCompletedTaskList(chatId);
+        List<TaskEntity> uncompletedTask = getUncompletedTaskList(chatId);
 
-        if (tasks.isEmpty()) {
+        if (completedTasks.isEmpty() && uncompletedTask.isEmpty()) {
             return new GenericTelegramResponse("Задачи не найдены. Добавить задачу можно с помощью " + Commands.COMMAND_ADD_TASK);
         }
 
-        DateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
-        return new CompositeTelegramResponse(tasks.stream()
+        List<TelegramResponse> responses = new LinkedList<>();
+
+        responses.add(new GenericTelegramResponse("Выполненные задачи:"));
+        responses.addAll(completedTasks.stream()
+                .map(task -> {
+                            Map<String, String> buttons = new TreeMap<>();
+                            addCancelCallbackButton(task, buttons);
+                            addDeleteCallbackButton(task, buttons);
+                            return formTaskCallbackButton(task, buttons);
+
+                        }
+                )
+                .toList());
+
+        responses.add(new GenericTelegramResponse("Не выполненные задачи:"));
+        responses.addAll(uncompletedTask.stream()
                 .map(task -> {
                             Map<String, String> buttons = new HashMap<>();
-                            buttons.put("Удалить задачу " + task.getId(),
-                                    callbackEncoder.encode(
-                                            TaskCallbackChain.FN_DELETE,
-                                            task.getId()
-                                    ));
-
-                            return new InlineButtonTelegramResponse(
-                                    MESSAGE_TEXT.formatted(
-                                            task.getId(),
-                                            task.getPatientEntity().getSecondName(),
-                                            task.getPatientEntity().getFirstName(),
-                                            task.getPatientEntity().getMiddleName(),
-                                            formater.format(task.getPatientEntity().getBirthday()),
-                                            task.getLowTimeLimit(),
-                                            task.getHighTimeLimit(),
-                                            formater.format(task.getHighDateLimit()),
-                                            task.getPolyclinicId(),
-                                            task.getSpecialityId(),
-                                            task.getDoctorId()
-                                    ),
-                                    List.of(buttons)
-                            );
+                            addDeleteCallbackButton(task, buttons);
+                            return formTaskCallbackButton(task, buttons);
                         }
                 )
                 .toList()
+        );
+
+        return new CompositeTelegramResponse(responses);
+    }
+
+    @NotNull
+    private void addCancelCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Отменить",
+                callbackEncoder.encode(
+                        TaskCallbackChain.FN_CANCEL,
+                        task.getId()
+                ));
+    }
+
+    @NotNull
+    private void addDeleteCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Удалить",
+                callbackEncoder.encode(
+                        TaskCallbackChain.FN_DELETE,
+                        task.getId()
+                ));
+    }
+
+    @NotNull
+    private InlineButtonTelegramResponse formTaskCallbackButton(TaskEntity task, Map<String, String> buttons) {
+
+        DateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+
+        return new InlineButtonTelegramResponse(
+                MESSAGE_TEXT.formatted(
+                        task.getId(),
+                        task.getPatientEntity().getSecondName(),
+                        task.getPatientEntity().getFirstName(),
+                        task.getPatientEntity().getMiddleName(),
+                        formater.format(task.getPatientEntity().getBirthday()),
+                        task.getLowTimeLimit(),
+                        task.getHighTimeLimit(),
+                        formater.format(task.getHighDateLimit()),
+                        task.getPolyclinicId(),
+                        task.getSpecialityId(),
+                        task.getDoctorId()
+                ),
+                List.of(buttons)
         );
     }
 }

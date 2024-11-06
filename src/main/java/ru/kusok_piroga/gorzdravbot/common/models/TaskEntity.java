@@ -37,6 +37,8 @@ public class TaskEntity {
 
     private Date lastNotify;
 
+    private String recordedAppointmentId;
+
     @ManyToOne
     @JoinColumn(name="patient_id")
     private PatientEntity patientEntity;

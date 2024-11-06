@@ -16,6 +16,7 @@ public class TaskCallbackChain extends BaseCallbackChain {
 
     public static final String FN_DELETE = "tsk_del";
     public static final String FN_RESTART = "tsk_up";
+    public static final String FN_CANCEL = "tsk_cnl";
 
     @Override
     public TelegramResponse execute(CallbackData data) {

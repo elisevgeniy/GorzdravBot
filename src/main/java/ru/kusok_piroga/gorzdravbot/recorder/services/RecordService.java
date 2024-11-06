@@ -73,6 +73,7 @@ public class RecordService {
 
         if (isAppointmentCreated){
             task.setCompleted(true);
+            task.setRecordedAppointmentId(availableAppointment.id());
             taskRepository.save(task);
 
             messageToChat(task, availableAppointment);
