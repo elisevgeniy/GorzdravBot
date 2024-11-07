@@ -99,6 +99,7 @@ public class RecordService {
 
         if (isAppointmentCreated){
             task.setCompleted(true);
+            task.setRecordedAppointmentId(appointmentId);
             taskRepository.save(task);
 
             messageToChat(task, "Вы записаны", appointmentId);
