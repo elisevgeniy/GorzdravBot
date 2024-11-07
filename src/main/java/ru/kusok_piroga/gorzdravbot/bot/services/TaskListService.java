@@ -85,7 +85,7 @@ public class TaskListService implements ICommandService {
 
     @NotNull
     private void addCancelCallbackButton(TaskEntity task, Map<String, String> buttons) {
-        buttons.put("Отменить",
+        buttons.put("Отменить номерок",
                 callbackEncoder.encode(
                         TaskCallbackChain.FN_CANCEL,
                         task.getId()
