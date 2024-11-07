@@ -27,12 +27,13 @@ public class TaskListService implements ICommandService {
 
     private static final String MESSAGE_TEXT = """
             Задание №%d
-            ФИО: %s %s %s 
+            ФИО: %s %s %s
             Др: %s
             Условия записи: между %s и %s до %s
             Поликлиника: %s
             Специалист: %s
-            Врач: %s""";
+            Врач: %s
+            Номерок: %s""";
 
     @Override
     public TelegramResponse execute(UpdateRequest request) {
@@ -61,7 +62,9 @@ public class TaskListService implements ICommandService {
         responses.addAll(completedTasks.stream()
                 .map(task -> {
                             Map<String, String> buttons = new TreeMap<>();
-                            addCancelCallbackButton(task, buttons);
+                            if (task.getRecordedAppointmentId() != null){
+                                addCancelCallbackButton(task, buttons);
+                            }
                             addDeleteCallbackButton(task, buttons);
                             return formTaskCallbackButton(task, buttons);
 
@@ -83,7 +86,6 @@ public class TaskListService implements ICommandService {
         return new CompositeTelegramResponse(responses);
     }
 
-    @NotNull
     private void addCancelCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put("Отменить номерок",
                 callbackEncoder.encode(
@@ -92,7 +94,6 @@ public class TaskListService implements ICommandService {
                 ));
     }
 
-    @NotNull
     private void addDeleteCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put("Удалить",
                 callbackEncoder.encode(
@@ -118,7 +119,11 @@ public class TaskListService implements ICommandService {
                         formater.format(task.getHighDateLimit()),
                         task.getPolyclinicId(),
                         task.getSpecialityId(),
-                        task.getDoctorId()
+                        task.getDoctorId(),
+                        (task.getRecordedAppointmentId() == null) ?
+                                "не взят"
+                                :
+                                task.getRecordedAppointmentId()
                 ),
                 List.of(buttons)
         );

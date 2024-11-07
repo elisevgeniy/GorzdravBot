@@ -1,23 +1,15 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
 import io.github.drednote.telegram.core.request.UpdateRequest;
-import io.github.drednote.telegram.response.CompositeTelegramResponse;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -58,9 +50,10 @@ public class TaskCancelService implements ICommandService {
                 task.get().getRecordedAppointmentId(),
                 task.get().getPatientEntity().getPatientId()
         )) {
+            String appointmentId = task.get().getRecordedAppointmentId();
             task.get().setRecordedAppointmentId(null);
             repository.save(task.get());
-            return printSuccessResult(task.get().getRecordedAppointmentId());
+            return printSuccessResult(appointmentId);
         } else  {
             log.warn("Cancel fail. Task id = {}, Appointment id = {}", taskId, task.get().getRecordedAppointmentId());
             return printFailResult();
