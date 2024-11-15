@@ -11,7 +11,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.callbacks.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
+import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
 
@@ -28,6 +29,7 @@ public class RecordService {
     private final TelegramClient telegramClient;
     private final TaskRepository taskRepository;
     private final ApiService api;
+    private final CallbackEncoder callbackEncoder;
 
     public static final int DELAY_FOR_RECORD_VALUE = 5;
     public static final int DELAY_FOR_RECORD_UNIT = Calendar.MINUTE;
@@ -73,6 +75,7 @@ public class RecordService {
 
         if (isAppointmentCreated){
             task.setCompleted(true);
+            task.setRecordedAppointmentId(availableAppointment.id());
             taskRepository.save(task);
 
             messageToChat(task, availableAppointment);
@@ -98,9 +101,10 @@ public class RecordService {
 
         if (isAppointmentCreated){
             task.setCompleted(true);
+            task.setRecordedAppointmentId(appointmentId);
             taskRepository.save(task);
 
-            messageToChat(task, "Вы записаны", appointmentId);
+            messageToChat(task, "Вы записаны. Номерок '%s'".formatted(appointmentId));
         }
 
         return isAppointmentCreated;
@@ -114,12 +118,11 @@ public class RecordService {
                                 task.getDoctorId(),
                                 task.getSpecialityId(),
                                 getPrintableAppointmentDateTime(appointment.visitStart())
-                        ),
-                appointment.id()
+                        )
         );
     }
 
-    private boolean messageToChat(TaskEntity task, String message, String appointmentId) {
+    private boolean messageToChat(TaskEntity task, String message) {
         SendMessage telegramMessage = SendMessage
                 .builder()
                 .chatId(task.getDialogId())
@@ -131,7 +134,7 @@ public class RecordService {
                                         InlineKeyboardButton
                                                 .builder()
                                                 .text("Отменить")
-                                                .callbackData(cancelButtonData(task, appointmentId))
+                                                .callbackData(getCancelCallbackData(task))
                                                 .build()
                                 )
                         ))
@@ -145,10 +148,10 @@ public class RecordService {
         }
     }
 
-    private String cancelButtonData(TaskEntity task, String appointmentId){
-        return (new CallbackData(
-                "app_cncl",
-                List.of(task.getId().toString(), appointmentId).toString()
-        )).toString();
+    private String getCancelCallbackData(TaskEntity task) {
+        return callbackEncoder.encode(
+                TaskCallbackChain.FN_CANCEL,
+                task.getId()
+        );
     }
 }
