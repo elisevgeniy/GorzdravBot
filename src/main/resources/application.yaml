@@ -1,25 +1,18 @@
 spring:
   application:
     name: GorzdravBot
-  config:
-    import: secrets.yaml
   datasource:
-    url: jdbc:postgresql://localhost:5432/gorzdrav_bot
-#    username: user
-#    password: password
+    url: jdbc:postgresql://database:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
-#    database: postgresql
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-
 drednote:
   telegram:
-#    name:
-#    token:
+    name: ${BOT_NAME}
+    token: ${BOT_TOKEN}
     menu:
       send-policy: on_startup
       values:

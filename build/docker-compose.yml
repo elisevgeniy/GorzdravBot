@@ -1,0 +1,28 @@
+services:
+  app:
+    container_name: GorzdravBotApp
+    restart: always
+    depends_on:
+      - database
+    build:
+      dockerfile: build/Dockerfile
+      context: ..
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      BOT_NAME: ${BOT_NAME}
+      BOT_TOKEN: ${BOT_TOKEN}
+
+  database:
+    image: postgres:latest
+    container_name: GorzdravBotDB
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    expose:
+      - 5432
+    volumes:
+      - ../database_data:/var/lib/postgresql/data
