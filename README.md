@@ -32,6 +32,6 @@ cd GorzdravBot
        
 
 ## TODO  
-- [ ] https://github.com/elisevgeniy/GorzdravBot/issues/13
-- [ ] https://github.com/elisevgeniy/GorzdravBot/issues/14
+- [ ] #13 Change RuntimeExceptions to sepatate Exceptions
+- [ ] #14 Add tests
 - [ ] Переработать архитектуру
