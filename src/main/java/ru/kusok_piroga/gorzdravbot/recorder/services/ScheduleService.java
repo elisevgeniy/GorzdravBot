@@ -1,7 +1,6 @@
 package ru.kusok_piroga.gorzdravbot.recorder.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,8 +22,7 @@ public class ScheduleService {
     private final RecordService recordService;
 
     @Async
-//    @Scheduled(cron = "0 */5 * * * *")
-    @Scheduled(cron = "*/20 * * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void scheduleExecute() {
         log.info("Scheduled execution start");
 
