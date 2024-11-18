@@ -57,6 +57,12 @@ public class ScheduleService {
                     log.info("Task, id={}, recording success", task.getId());
                 }
             }
+        } else {
+            if (task.getLastNotify() != null){
+                task.setLastNotify(null);
+                taskRepository.save(task);
+                log.info("Task, id={}, notification nulled", task.getId());
+            }
         }
 
         log.info("Task, id={}, process finish", task.getId());
