@@ -1,3 +1,4 @@
+name: gorzdrav-bot
 services:
   app:
     container_name: GorzdravBotApp
