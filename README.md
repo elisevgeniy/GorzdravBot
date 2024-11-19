@@ -24,7 +24,7 @@ cd GorzdravBot
       1. Зарегистрировать бота, получть `name` и `token` бота. Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot)
       2. Получить `username`, `password` и `database name` от запущенной PostgreSQL базы данных
       3. Зполнить файл `src/main/resources/application.yaml` вышеуказанными параметрами
-      4. Запустить бота ```mvn spring-boot:run```
+      4. Запустить бота ```mvnw spring-boot:run```
    2. С помощью Docker
       1. Зарегистрировать бота, получть `name` и `token` бота. Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot) 
       2. Скопировать `cp ./build/.env_example ./build/.env` и заполнить `.env` 
