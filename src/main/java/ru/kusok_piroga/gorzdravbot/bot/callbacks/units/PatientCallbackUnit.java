@@ -1,20 +1,20 @@
 package ru.kusok_piroga.gorzdravbot.bot.callbacks.units;
 
-import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.exceptions.WrongCallbackDataException;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
-import ru.kusok_piroga.gorzdravbot.bot.services.PatientDeleteService;
 import ru.kusok_piroga.gorzdravbot.bot.responses.DeleteMessageTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class PatientCallbackUnit extends BaseCallbackUnit {
 
-    private final PatientDeleteService patientDeleteService;
+    private final PatientService patientService;
 
     public static final String FN_DELETE = "ptnt_del";
 
@@ -28,12 +28,15 @@ public class PatientCallbackUnit extends BaseCallbackUnit {
 
         switch (data.fn()){
             case FN_DELETE:
-                patientDeleteService.deletePatient(data.d());
+                try {
+                    patientService.deletePatient(data.d());
+                } catch (Exception e){
+                    throw new WrongCallbackDataException();
+                }
                 return new DeleteMessageTelegramResponse();
-            default:
-                log.info("Callback unknown fn");
-                return new GenericTelegramResponse("Ошибка значения callback");
         }
+
+        return null;
     }
 
     private boolean checkAffiliation(String function){

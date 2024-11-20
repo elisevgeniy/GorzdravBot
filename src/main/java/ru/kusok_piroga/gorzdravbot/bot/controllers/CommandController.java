@@ -6,6 +6,7 @@ import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import ru.kusok_piroga.gorzdravbot.bot.services.*;
+import ru.kusok_piroga.gorzdravbot.bot.services.PatientListCommandService;
 
 import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 
@@ -16,8 +17,8 @@ public class CommandController {
     private final TaskService taskService;
     private final TaskListService taskListService;
     private final StartService startService;
-    private final PatientCommandService patientCommandService;
-    private final PatientListService patientListService;
+    private final PatientCreateCommandService patientCreateCommandService;
+    private final PatientListCommandService patientListCommandService;
 
     @TelegramCommand(COMMAND_START)
     public TelegramResponse onStart(UpdateRequest request) {
@@ -31,12 +32,12 @@ public class CommandController {
 
     @TelegramCommand(COMMAND_ADD_PATIENT)
     public TelegramResponse onAddNewPatient(UpdateRequest request) {
-        return patientCommandService.processCommand(request);
+        return patientCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_PATIENT)
     public TelegramResponse onListPatient(UpdateRequest request) {
-        return patientListService.processCommand(request);
+        return patientListCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_TASK)

@@ -20,6 +20,7 @@ import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +31,8 @@ import java.util.*;
 public class TaskService implements ICommandService {
 
     private final ApiService api;
-    private final PatientListService patientListService;
+    private final PatientService patientService;
+    private final PatientListCommandService patientListCommandService;
     private final TaskRepository repository;
 
     @Override
@@ -63,7 +65,7 @@ public class TaskService implements ICommandService {
     }
 
     private TelegramResponse taskCreate(long dialogId) {
-        if (patientListService.getPatientList(dialogId).isEmpty()) {
+        if (patientService.getPatientList(dialogId).isEmpty()) {
             return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
         }
 
@@ -181,7 +183,7 @@ public class TaskService implements ICommandService {
             repository.save(task);
             return new CompositeTelegramResponse(List.of(
                     new GenericTelegramResponse("Крайняя дата для записи - %s".formatted(message)),
-                    patientListService.printPatientListForChoose(task.getDialogId())
+                    patientListCommandService.printPatientListForChoose(task.getDialogId())
             ));
         } catch (ParseException e) {
             return new GenericTelegramResponse("Ошибка формата даты, попробуйте ещё раз");
@@ -190,7 +192,7 @@ public class TaskService implements ICommandService {
 
     private TelegramResponse taskScenarioSetPatient(TaskEntity task, String message) {
 
-        Optional<PatientEntity> patient = patientListService.getPatientById(Long.parseLong(message));
+        Optional<PatientEntity> patient = patientService.getPatientById(Long.parseLong(message));
 
         if (patient.isEmpty()){
             return new GenericTelegramResponse("Пациент не найден. Всё, кирдык, давай по-новой, но добавь пациента с помощью " + Commands.COMMAND_ADD_PATIENT);
@@ -207,12 +209,12 @@ public class TaskService implements ICommandService {
         if (patientId.isEmpty()){
             return new CompositeTelegramResponse(List.of(
                     new GenericTelegramResponse("Пациент в мед. учреждении не найден. Выбери другого"),
-                    patientListService.printPatientListForChoose(task.getDialogId())
+                    patientListCommandService.printPatientListForChoose(task.getDialogId())
             ));
         }
 
         patient.get().setPatientId(patientId);
-        patientListService.savePatient(patient.get());
+        patientService.savePatient(patient.get());
 
         task.setPatientEntity(patient.get());
         task.setState(TaskState.FINAL);

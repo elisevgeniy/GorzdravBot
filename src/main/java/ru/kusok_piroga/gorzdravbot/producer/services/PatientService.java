@@ -2,6 +2,7 @@ package ru.kusok_piroga.gorzdravbot.producer.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.CreatePatientException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateFormatException;
@@ -11,6 +12,8 @@ import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -73,5 +76,30 @@ public class PatientService {
         } catch (ParseException e) {
             throw new DateFormatException();
         }
+    }
+
+    public Optional<PatientEntity> getPatientById(long patientId) {
+        return repository.findById(patientId);
+    }
+
+    public void savePatient(PatientEntity patient) {
+        repository.save(patient);
+    }
+
+    public void deletePatient(String idStr){
+        try {
+            deletePatient(Long.parseLong(idStr));
+        } catch (NumberFormatException e){
+            log.error("Wrong patient id: {}", idStr);
+        }
+    }
+
+    public void deletePatient(@NonNull Long id){
+        log.info("Delete patient id: {}", id);
+        repository.deleteById(id);
+    }
+
+    public List<PatientEntity> getPatientList(long chatId) {
+        return repository.findCompletedByDialogId(chatId);
     }
 }

@@ -5,23 +5,18 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.*;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
-import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class PatientCommandService implements ICommandService {
+public class PatientCreateCommandService implements ICommandService {
 
-    private final ApiService api;
     private final PatientRepository repository;
     private final PatientService service;
 
