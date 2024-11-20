@@ -1,7 +1,8 @@
 package ru.kusok_piroga.gorzdravbot.bot.services;
 
 import org.junit.jupiter.api.Test;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.bot.utils.TaskValidator;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 

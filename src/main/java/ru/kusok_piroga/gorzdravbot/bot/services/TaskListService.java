@@ -7,12 +7,12 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,8 +36,13 @@ public class TaskListService implements ICommandService {
             Номерок: %s""";
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
         return printTaskList(request.getChatId());
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 
     public List<TaskEntity> getCompletedTaskList(long chatId) {
@@ -89,7 +94,7 @@ public class TaskListService implements ICommandService {
     private void addCancelCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put("Отменить номерок",
                 callbackEncoder.encode(
-                        TaskCallbackChain.FN_CANCEL,
+                        TaskCallbackUnit.FN_CANCEL,
                         task.getId()
                 ));
     }
@@ -97,7 +102,7 @@ public class TaskListService implements ICommandService {
     private void addDeleteCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put("Удалить",
                 callbackEncoder.encode(
-                        TaskCallbackChain.FN_DELETE,
+                        TaskCallbackUnit.FN_DELETE,
                         task.getId()
                 ));
     }

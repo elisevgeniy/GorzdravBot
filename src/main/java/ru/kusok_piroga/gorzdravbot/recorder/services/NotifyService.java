@@ -10,15 +10,15 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.recorder.callbacks.RecordCallbackUnit;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.RecordCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.recorder.models.NotifyToChatData;
 
 import java.util.Calendar;
 import java.util.List;
 
-import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintableAppointmentDateTime;
+import static ru.kusok_piroga.gorzdravbot.utils.DateConverter.getPrintableAppointmentDateTime;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_UNIT;
 import static ru.kusok_piroga.gorzdravbot.recorder.services.RecordService.DELAY_FOR_RECORD_VALUE;
 

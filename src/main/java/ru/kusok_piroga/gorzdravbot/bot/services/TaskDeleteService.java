@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 @Service
 @RequiredArgsConstructor

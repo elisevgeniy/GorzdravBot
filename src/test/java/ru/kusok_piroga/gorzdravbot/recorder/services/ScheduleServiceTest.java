@@ -8,10 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import ru.kusok_piroga.gorzdravbot.bot.repositories.DialogRepository;
-import ru.kusok_piroga.gorzdravbot.callbacks.repositories.CallbackRepository;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.repositories.CallbackRepository;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 import java.util.Date;
 

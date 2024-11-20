@@ -6,12 +6,12 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.callbacks.PatientCallbackChain;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.PatientCallbackUnit;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
-import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 
 import java.util.*;
 
@@ -23,8 +23,13 @@ public class PatientListService implements ICommandService {
     private final CallbackEncoder callbackEncoder;
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
         return printPatientList(request.getChatId());
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 
     public Optional<PatientEntity>  getPatientById(long patientId) {
@@ -80,7 +85,7 @@ public class PatientListService implements ICommandService {
         buttons.get(buttons.size()-1).put(
                 "Удалить",
                 callbackEncoder.encode(
-                        PatientCallbackChain.FN_DELETE,
+                        PatientCallbackUnit.FN_DELETE,
                         patient.getId()
                 )
         );

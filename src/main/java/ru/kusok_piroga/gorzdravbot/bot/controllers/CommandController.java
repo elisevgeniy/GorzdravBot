@@ -16,12 +16,12 @@ public class CommandController {
     private final TaskService taskService;
     private final TaskListService taskListService;
     private final StartService startService;
-    private final PatientCreateService patientCreateService;
+    private final PatientCommandService patientCommandService;
     private final PatientListService patientListService;
 
     @TelegramCommand(COMMAND_START)
     public TelegramResponse onStart(UpdateRequest request) {
-        return startService.execute(request);
+        return startService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_TASK)
@@ -31,16 +31,16 @@ public class CommandController {
 
     @TelegramCommand(COMMAND_ADD_PATIENT)
     public TelegramResponse onAddNewPatient(UpdateRequest request) {
-        return patientCreateService.cleanStart(request);
+        return patientCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_PATIENT)
     public TelegramResponse onListPatient(UpdateRequest request) {
-        return patientListService.execute(request);
+        return patientListService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_TASK)
     public TelegramResponse onListTask(UpdateRequest request) {
-        return taskListService.execute(request);
+        return taskListService.processCommand(request);
     }
 }

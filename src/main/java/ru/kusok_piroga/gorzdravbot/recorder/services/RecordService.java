@@ -11,16 +11,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintableAppointmentDateTime;
+import static ru.kusok_piroga.gorzdravbot.utils.DateConverter.getPrintableAppointmentDateTime;
 
 @Service
 @Slf4j
@@ -150,7 +150,7 @@ public class RecordService {
 
     private String getCancelCallbackData(TaskEntity task) {
         return callbackEncoder.encode(
-                TaskCallbackChain.FN_CANCEL,
+                TaskCallbackUnit.FN_CANCEL,
                 task.getId()
         );
     }

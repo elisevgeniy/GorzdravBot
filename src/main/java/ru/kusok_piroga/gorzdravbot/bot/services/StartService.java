@@ -12,7 +12,12 @@ public class StartService implements ICommandService {
     private static final String MSG_START = "Приветствую!\nДля возможности записаться требуется добавить пациента.\nЭто можно сделать командой " + Commands.COMMAND_ADD_PATIENT;
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
         return new GenericTelegramResponse(MSG_START);
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 }

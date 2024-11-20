@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.common.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
 
 @Slf4j
 @Service
@@ -18,7 +18,7 @@ public class PatientDeleteService implements ICommandService {
     private final PatientListService patientListService;
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
 
         if (!request.getMessageTypes().contains(MessageType.COMMAND)
                 && request.getText() != null) {
@@ -26,6 +26,11 @@ public class PatientDeleteService implements ICommandService {
         }
 
         return patientListService.printPatientList(request.getChatId());
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 
     public void deletePatient(String idStr){

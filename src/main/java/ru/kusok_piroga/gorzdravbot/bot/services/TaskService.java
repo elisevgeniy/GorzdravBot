@@ -14,11 +14,12 @@ import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.common.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskState;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.common.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.bot.utils.TaskValidator;
+import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,7 +34,7 @@ public class TaskService implements ICommandService {
     private final TaskRepository repository;
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
 
         Long dialogId = request.getChatId();
 
@@ -48,6 +49,11 @@ public class TaskService implements ICommandService {
         }
 
         return taskScenario(result.get(), request.getText());
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 
     public TelegramResponse cleanStart(UpdateRequest request) {

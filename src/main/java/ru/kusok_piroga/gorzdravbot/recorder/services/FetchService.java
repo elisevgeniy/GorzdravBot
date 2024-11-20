@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.*;
+import static ru.kusok_piroga.gorzdravbot.utils.DateConverter.*;
 
 @Service
 @RequiredArgsConstructor

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 import java.util.*;
 
@@ -24,8 +24,13 @@ public class TaskCancelService implements ICommandService {
     private static final String MESSAGE_FAIL_TEXT = "Номерок не удалось отменить (произошла ошибка или номерок просрочен или уже отменён)";
 
     @Override
-    public TelegramResponse execute(UpdateRequest request) {
+    public TelegramResponse processCommand(UpdateRequest request) {
         return cancelTask(request.getText());
+    }
+
+    @Override
+    public TelegramResponse processMessage(UpdateRequest request) {
+        return null;
     }
 
     public TelegramResponse cancelTask(String taskIdStr){
