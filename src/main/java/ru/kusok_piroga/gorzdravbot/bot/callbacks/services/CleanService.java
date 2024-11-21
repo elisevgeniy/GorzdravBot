@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.bot.callbacks.utils;
+package ru.kusok_piroga.gorzdravbot.bot.callbacks.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
