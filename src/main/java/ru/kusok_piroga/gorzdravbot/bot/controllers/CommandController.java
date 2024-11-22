@@ -14,8 +14,8 @@ import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 @RequiredArgsConstructor
 public class CommandController {
 
-    private final TaskService taskService;
-    private final TaskListService taskListService;
+    private final TaskCreateCommandService taskCreateCommandService;
+    private final TaskListCommandService taskListCommandService;
     private final StartService startService;
     private final PatientCreateCommandService patientCreateCommandService;
     private final PatientListCommandService patientListCommandService;
@@ -27,7 +27,7 @@ public class CommandController {
 
     @TelegramCommand(COMMAND_ADD_TASK)
     public TelegramResponse onAddNewTask(UpdateRequest request) {
-        return taskService.cleanStart(request);
+        return taskCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_PATIENT)
@@ -42,6 +42,6 @@ public class CommandController {
 
     @TelegramCommand(COMMAND_LIST_TASK)
     public TelegramResponse onListTask(UpdateRequest request) {
-        return taskListService.processCommand(request);
+        return taskListCommandService.processCommand(request);
     }
 }

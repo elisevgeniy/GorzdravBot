@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.domain.exceptions.CreatePatientException;
-import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateFormatException;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.CreatePatientException;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.DateFormatException;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
@@ -23,6 +23,8 @@ public class PatientService {
     private final PatientRepository repository;
 
     public void createPatient(long dialogId) throws CreatePatientException {
+        clearUncompletedPatient(dialogId);
+
         PatientEntity patient = new PatientEntity();
 
         patient.setDialogId(dialogId);

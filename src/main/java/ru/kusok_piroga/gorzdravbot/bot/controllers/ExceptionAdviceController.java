@@ -6,7 +6,7 @@ import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.extern.slf4j.Slf4j;
-import ru.kusok_piroga.gorzdravbot.domain.exceptions.AbstractBotException;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.AbstractBotException;
 
 @Slf4j
 @TelegramAdvice

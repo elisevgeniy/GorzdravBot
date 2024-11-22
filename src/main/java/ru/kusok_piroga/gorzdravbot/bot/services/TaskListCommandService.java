@@ -8,11 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,12 +21,12 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class TaskListService implements ICommandService {
+public class TaskListCommandService implements ICommandService {
 
-    private final TaskRepository repository;
+    private final TaskService service;
     private final CallbackEncoder callbackEncoder;
 
-    private static final String MESSAGE_TEXT = """
+    private static final String TASK_DISC = """
             Задание №%d
             ФИО: %s %s %s
             Др: %s
@@ -45,48 +46,32 @@ public class TaskListService implements ICommandService {
         return null;
     }
 
-    public List<TaskEntity> getCompletedTaskList(long chatId) {
-        return repository.findAllCompletedTasksByDialogId(chatId);
-    }
-
-    public List<TaskEntity> getUncompletedTaskList(long chatId) {
-        return repository.findAllUncompletedTasksByDialogId(chatId);
-    }
-
     public TelegramResponse printTaskList(long chatId) {
-        List<TaskEntity> completedTasks = getCompletedTaskList(chatId);
-        List<TaskEntity> uncompletedTask = getUncompletedTaskList(chatId);
+        List<TaskEntity> completedTasks = service.getCompletedTaskList(chatId);
+        List<TaskEntity> uncompletedTask = service.getUncompletedTaskList(chatId);
 
         if (completedTasks.isEmpty() && uncompletedTask.isEmpty()) {
-            return new GenericTelegramResponse("Задачи не найдены. Добавить задачу можно с помощью " + Commands.COMMAND_ADD_TASK);
+            throw new EmptyTaskListException();
         }
 
         List<TelegramResponse> responses = new LinkedList<>();
 
-        responses.add(new GenericTelegramResponse("Выполненные задачи:"));
-        responses.addAll(completedTasks.stream()
-                .map(task -> {
-                            Map<String, String> buttons = new TreeMap<>();
-                            if (task.getRecordedAppointmentId() != null){
-                                addCancelCallbackButton(task, buttons);
-                            }
-                            addDeleteCallbackButton(task, buttons);
-                            return formTaskCallbackButton(task, buttons);
+        if (!completedTasks.isEmpty()) {
+            responses.add(new GenericTelegramResponse("Выполненные задачи:"));
+            responses.addAll(
+                    completedTasks.stream()
+                    .map(this::prepareCompletedTaskMessage)
+                    .toList());
+        }
 
-                        }
-                )
-                .toList());
-
-        responses.add(new GenericTelegramResponse("Не выполненные задачи:"));
-        responses.addAll(uncompletedTask.stream()
-                .map(task -> {
-                            Map<String, String> buttons = new HashMap<>();
-                            addDeleteCallbackButton(task, buttons);
-                            return formTaskCallbackButton(task, buttons);
-                        }
-                )
-                .toList()
-        );
+        if (!uncompletedTask.isEmpty()) {
+            responses.add(new GenericTelegramResponse("Не выполненные задачи:"));
+            responses.addAll(
+                    uncompletedTask.stream()
+                    .map(this::prepareUncompletedTaskMessage)
+                    .toList()
+            );
+        }
 
         return new CompositeTelegramResponse(responses);
     }
@@ -107,13 +92,28 @@ public class TaskListService implements ICommandService {
                 ));
     }
 
+    private TelegramResponse prepareCompletedTaskMessage(TaskEntity task){
+        Map<String, String> buttons = new TreeMap<>();
+        if (task.getRecordedAppointmentId() != null) {
+            addCancelCallbackButton(task, buttons);
+        }
+        addDeleteCallbackButton(task, buttons);
+        return formTaskCallbackButton(task, buttons);
+    }
+
+    private TelegramResponse prepareUncompletedTaskMessage(TaskEntity task){
+        Map<String, String> buttons = new HashMap<>();
+        addDeleteCallbackButton(task, buttons);
+        return formTaskCallbackButton(task, buttons);
+    }
+
     @NotNull
     private InlineButtonTelegramResponse formTaskCallbackButton(TaskEntity task, Map<String, String> buttons) {
 
         DateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
 
         return new InlineButtonTelegramResponse(
-                MESSAGE_TEXT.formatted(
+                TASK_DISC.formatted(
                         task.getId(),
                         task.getPatientEntity().getSecondName(),
                         task.getPatientEntity().getFirstName(),

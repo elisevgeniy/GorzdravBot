@@ -6,19 +6,16 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
-
-import java.util.*;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.WrongParamException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
+import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TaskCancelService implements ICommandService {
+public class TaskCancelCommandService implements ICommandService {
 
-    private final TaskRepository repository;
-    private final ApiService api;
+    private final TaskService service;
 
     private static final String MESSAGE_SUCCESS_TEXT = "Номерок '%s' успешно отменён";
     private static final String MESSAGE_FAIL_TEXT = "Номерок не удалось отменить (произошла ошибка или номерок просрочен или уже отменён)";
@@ -39,28 +36,13 @@ public class TaskCancelService implements ICommandService {
             return cancelTask(taskId);
         } catch (NumberFormatException e){
             log.error("Id parsing error. Str id = '{}'", taskIdStr);
-            return printFailResult();
+            throw new WrongParamException();
         }
     }
     public TelegramResponse cancelTask(Long taskId){
-        Optional<TaskEntity> task = repository.findById(taskId);
-
-        if (task.isEmpty()){
-            log.error("Task with id = {} not found", taskId);
-            return printFailResult();
-        }
-
-        if (api.cancelAppointment(
-                task.get().getPolyclinicId(),
-                task.get().getRecordedAppointmentId(),
-                task.get().getPatientEntity().getPatientId()
-        )) {
-            String appointmentId = task.get().getRecordedAppointmentId();
-            task.get().setRecordedAppointmentId(null);
-            repository.save(task.get());
-            return printSuccessResult(appointmentId);
-        } else  {
-            log.warn("Cancel fail. Task id = {}, Appointment id = {}", taskId, task.get().getRecordedAppointmentId());
+        try {
+            return printSuccessResult(service.cancelAppointmentByTask(taskId));
+        } catch (CancelAppointmentException e) {
             return printFailResult();
         }
     }

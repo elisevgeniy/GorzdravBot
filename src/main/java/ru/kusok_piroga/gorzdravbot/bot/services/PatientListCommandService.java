@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.PatientCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.domain.exceptions.EmptyPatientListException;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyPatientListException;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;

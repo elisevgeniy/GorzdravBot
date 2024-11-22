@@ -23,13 +23,13 @@ import java.util.Optional;
     List<TaskEntity> findTasksByDialogIdWithStateAndCompletedStatus(Long dialogId, Boolean completed, TaskState state);
 
     default List<TaskEntity> findAllUncompletedTasks(){
-        return findAllUncompletedTasksWithState(TaskState.FINAL);
+        return findAllUncompletedTasksWithState(TaskState.SETUPED);
     }
     default List<TaskEntity> findAllCompletedTasksByDialogId(Long dialogId){
-        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, true, TaskState.FINAL);
+        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, true, TaskState.SETUPED);
     }
     default List<TaskEntity> findAllUncompletedTasksByDialogId(Long dialogId){
-        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, false, TaskState.FINAL);
+        return findTasksByDialogIdWithStateAndCompletedStatus(dialogId, false, TaskState.SETUPED);
     }
 
 
@@ -37,7 +37,7 @@ import java.util.Optional;
     List<TaskEntity> findByDialogIdAndState(Long dialogId, TaskState state);
 
     default List<TaskEntity> findAllByDialogId(Long dialogId){
-        return findByDialogIdAndState(dialogId, TaskState.FINAL);
+        return findByDialogIdAndState(dialogId, TaskState.SETUPED);
     }
 
     @Transactional

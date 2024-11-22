@@ -24,7 +24,6 @@ public class PatientCreateCommandService implements ICommandService {
     public TelegramResponse processCommand(UpdateRequest request) {
         Long dialogId = request.getChatId();
 
-        service.clearUncompletedPatient(dialogId);
         service.createPatient(dialogId);
 
         return new GenericTelegramResponse("Введите фамилию:");
