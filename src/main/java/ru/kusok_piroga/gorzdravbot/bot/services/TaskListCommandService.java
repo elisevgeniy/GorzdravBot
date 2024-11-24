@@ -8,11 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
-import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
-import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
 import java.text.DateFormat;

@@ -1,4 +1,4 @@
-package ru.kusok_piroga.gorzdravbot.bot.utils;
+package ru.kusok_piroga.gorzdravbot.producer.utils;
 
 import lombok.experimental.UtilityClass;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
