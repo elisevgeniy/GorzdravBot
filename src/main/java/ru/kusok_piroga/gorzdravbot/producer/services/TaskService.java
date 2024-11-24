@@ -14,6 +14,7 @@ import ru.kusok_piroga.gorzdravbot.producer.utils.TaskValidator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -27,6 +28,17 @@ public class TaskService {
     private final ApiService api;
     private final TaskRepository repository;
     private final PatientService patientService;
+
+    private final Map<TaskState, TaskFieldFiller> taskFillers = Map.of(
+            SET_DISTRICT, new DistrictFiller(),
+            SET_POLYCLINIC, new PolyclinicFiller(),
+            SET_SPECIALITY, new SpecialityFiller(),
+            SET_DOCTOR, new DoctorFiller(),
+            SET_PATIENT, new PatientFiller(),
+            SET_TIME_LOW_LIMITS, new LowTimeLimitFiller(),
+            SET_TIME_HIGH_LIMITS, new HighTimeLimitFiller(),
+            SET_DATE_LIMITS, new DateFiller()
+    );
 
     public List<TaskEntity> getCompletedTaskList(long chatId) {
         return repository.findAllCompletedTasksByDialogId(chatId);
@@ -91,108 +103,134 @@ public class TaskService {
         repository.deleteByDialogIdAndStateIsNot(dialogId, SETUPED);
     }
 
-    public TaskEntity fillTaskFields(TaskEntity task, String value) throws TimeFormatException, TimeConsistencyException, DateFormatException, WrongPolyclinicForPatientException, NoSuchElementException {
-        return switch (task.getState()) {
-            case INIT, SETUPED -> task;
-            case SET_DISTRICT -> {
-                Integer districtId = Integer.parseInt(value);
-                task.setDistrictId(districtId);
-                task.setState(SET_POLYCLINIC);
-                yield repository.save(task);
-            }
-            case SET_POLYCLINIC -> {
-                Integer polyclinicId = Integer.parseInt(value);
-                task.setPolyclinicId(polyclinicId);
-                task.setState(SET_SPECIALITY);
-                yield repository.save(task);
-            }
-            case SET_SPECIALITY -> {
-                Integer specialityId = Integer.parseInt(value);
-                task.setSpecialityId(specialityId);
-                task.setState(SET_DOCTOR);
-                yield repository.save(task);
-            }
-            case SET_DOCTOR -> {
-                task.setDoctorId(value);
-                task.setState(SET_PATIENT);
-                yield repository.save(task);
-            }
-            case SET_PATIENT -> {
-                task.setState(SET_TIME_LOW_LIMITS);
-                yield setPatient(task, value);
-            }
-            case SET_TIME_LOW_LIMITS -> {
-                if (TaskValidator.validateTime(value)) {
-                    task.setState(SET_TIME_HIGH_LIMITS);
-                    task.setLowTimeLimit(value);
-                    yield repository.save(task);
-                } else {
-                    throw new TimeFormatException();
-                }
-            }
-            case SET_TIME_HIGH_LIMITS -> {
-                if (TaskValidator.validateTime(value)) {
-                    task.setHighTimeLimit(value);
-
-                    if (!TaskValidator.validateTaskTimeLimits(task)) {
-                        task.setState(SET_TIME_LOW_LIMITS);
-                        repository.save(task);
-                        throw new TimeConsistencyException();
-                    }
-
-                    task.setState(SET_DATE_LIMITS);
-                    yield repository.save(task);
-                } else {
-                    throw new TimeFormatException();
-                }
-            }
-            case SET_DATE_LIMITS -> {
-                task.setState(SETUPED);
-                yield setDate(task, value);
-            }
-
-
-        };
-    }
-
-    private TaskEntity setPatient(TaskEntity task, String value) throws WrongPolyclinicForPatientException, NoSuchElementException {
-        Optional<PatientEntity> patient = patientService.getPatientById(Long.parseLong(value));
-
-        if (patient.isEmpty()) {
-            throw new NoSuchElementException();
+    public TaskEntity fillTaskFields(TaskEntity task, String value) throws Exception {
+        TaskFieldFiller filler = taskFillers.get(task.getState());
+        if (filler == null) {
+            return task;
         }
-
-        String patientId = api.getPatientId(
-                task.getPolyclinicId(),
-                patient.get().getFirstName(),
-                patient.get().getSecondName(),
-                patient.get().getMiddleName(),
-                patient.get().getBirthday()
-        );
-
-        if (patientId.isEmpty()) {
-            throw new WrongPolyclinicForPatientException();
-        }
-
-        patient.get().setPatientId(patientId);
-        patientService.savePatient(patient.get());
-
-        task.setPatientEntity(patient.get());
-        return repository.save(task);
-    }
-
-    private TaskEntity setDate(TaskEntity task, String value) throws DateFormatException {
-        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
-        formater.setLenient(false);
-        try {
-            task.setHighDateLimit(formater.parse(value));
-            return repository.save(task);
-        } catch (ParseException e) {
-            throw  new DateFormatException();
-        }
+        return filler.fill(task, value);
     }
 
     public TaskEntity getUnsetupedTaskByDialog(Long dialogId){
         return repository.findFirstByDialogIdAndStateIsNot(dialogId, TaskState.SETUPED).orElseThrow();
+    }
+
+    private interface TaskFieldFiller {
+        TaskEntity fill(TaskEntity task, String value) throws Exception;
+    }
+
+    private class DistrictFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) {
+            task.setDistrictId(Integer.parseInt(value));
+            task.setState(TaskState.SET_POLYCLINIC);
+            return repository.save(task);
+        }
+    }
+
+    private class PolyclinicFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) {
+            task.setPolyclinicId(Integer.parseInt(value));
+            task.setState(TaskState.SET_SPECIALITY);
+            return repository.save(task);
+        }
+    }
+
+    private class SpecialityFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) {
+            task.setSpecialityId(Integer.parseInt(value));
+            task.setState(TaskState.SET_DOCTOR);
+            return repository.save(task);
+        }
+    }
+
+    private class DoctorFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) {
+            task.setDoctorId(value);
+            task.setState(TaskState.SET_PATIENT);
+            return repository.save(task);
+        }
+    }
+
+    private class PatientFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) throws WrongPolyclinicForPatientException {
+            Optional<PatientEntity> patient = patientService.getPatientById(Long.parseLong(value));
+
+            if (patient.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+
+            String patientId = api.getPatientId(
+                    task.getPolyclinicId(),
+                    patient.get().getFirstName(),
+                    patient.get().getSecondName(),
+                    patient.get().getMiddleName(),
+                    patient.get().getBirthday()
+            );
+
+            if (patientId.isEmpty()) {
+                throw new WrongPolyclinicForPatientException();
+            }
+
+            patient.get().setPatientId(patientId);
+            patientService.savePatient(patient.get());
+
+            task.setPatientEntity(patient.get());
+            task.setState(TaskState.SET_TIME_LOW_LIMITS);
+
+            return repository.save(task);
+        }
+    }
+
+    private class LowTimeLimitFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) throws TimeFormatException {
+            if (TaskValidator.validateTime(value)) {
+                task.setState(SET_TIME_HIGH_LIMITS);
+                task.setLowTimeLimit(value);
+                return repository.save(task);
+            } else {
+                throw new TimeFormatException();
+            }
+        }
+    }
+
+    private class HighTimeLimitFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) throws TimeFormatException, TimeConsistencyException {
+            if (TaskValidator.validateTime(value)) {
+                task.setHighTimeLimit(value);
+
+                if (!TaskValidator.validateTaskTimeLimits(task)) {
+                    task.setState(SET_TIME_LOW_LIMITS);
+                    repository.save(task);
+                    throw new TimeConsistencyException();
+                }
+
+                task.setState(SET_DATE_LIMITS);
+                return repository.save(task);
+            } else {
+                throw new TimeFormatException();
+            }
+        }
+    }
+
+    private class DateFiller implements TaskFieldFiller {
+        @Override
+        public TaskEntity fill(TaskEntity task, String value) throws DateFormatException {
+            SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+            formater.setLenient(false);
+            try {
+                task.setHighDateLimit(formater.parse(value));
+                task.setState(SETUPED);
+                return repository.save(task);
+            } catch (ParseException e) {
+                throw  new DateFormatException();
+            }
+        }
     }
 }

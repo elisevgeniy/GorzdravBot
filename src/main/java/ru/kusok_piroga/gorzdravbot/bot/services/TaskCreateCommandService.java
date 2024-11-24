@@ -14,8 +14,8 @@ import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.exceptions.CreateTaskException;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
@@ -73,6 +73,8 @@ public class TaskCreateCommandService implements ICommandService {
             ));
         } catch (NoSuchElementException e){
             return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return switch (task.getState()) {
