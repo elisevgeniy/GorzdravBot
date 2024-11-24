@@ -1,10 +1,10 @@
-package ru.kusok_piroga.gorzdravbot.bot.services;
+package ru.kusok_piroga.gorzdravbot.producer.utils;
 
 import org.junit.jupiter.api.Test;
-import ru.kusok_piroga.gorzdravbot.bot.utils.TaskValidator;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskValidatorTest {
 
