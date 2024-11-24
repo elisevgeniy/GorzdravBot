@@ -5,13 +5,14 @@ import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.models.*;
-import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
 import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 
-import java.util.*;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,12 @@ public class PatientCreateCommandService implements ICommandService {
             return new GenericTelegramResponse("Требуется ввести текст (или начать заново с помощью %s)".formatted(Commands.COMMAND_ADD_PATIENT));
         }
 
-        PatientEntity patient = service.fillPatientFields(patientOpt.get(), request.getText());
+        PatientEntity patient = null;
+        try {
+            patient = service.fillPatientFields(patientOpt.get(), request.getText());
+        } catch (DateFormatException e) {
+            throw new ru.kusok_piroga.gorzdravbot.bot.exceptions.DateFormatException();
+        }
 
         return switch (patient.getState()) {
             case SET_FIRST_NAME -> new GenericTelegramResponse("Введите имя:");

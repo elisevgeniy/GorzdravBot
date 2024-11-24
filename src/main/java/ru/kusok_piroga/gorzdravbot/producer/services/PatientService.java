@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.bot.exceptions.CreatePatientException;
-import ru.kusok_piroga.gorzdravbot.bot.exceptions.DateFormatException;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,7 +21,7 @@ public class PatientService {
 
     private final PatientRepository repository;
 
-    public void createPatient(long dialogId) throws CreatePatientException {
+    public void createPatient(long dialogId) {
         clearUncompletedPatient(dialogId);
 
         PatientEntity patient = new PatientEntity();
@@ -30,18 +29,14 @@ public class PatientService {
         patient.setDialogId(dialogId);
         patient.setState(PatientState.SET_SECOND_NAME);
 
-        try {
-            repository.save(patient);
-        } catch (Exception e) {
-            throw new CreatePatientException();
-        }
+        repository.save(patient);
     }
 
     public void clearUncompletedPatient(Long dialogId) {
         repository.deleteByDialogIdAndStateIsNot(dialogId, PatientState.COMPLETED);
     }
 
-    public PatientEntity fillPatientFields(PatientEntity patient, String value) {
+    public PatientEntity fillPatientFields(PatientEntity patient, String value) throws DateFormatException {
         patient = switch (patient.getState()) {
             case COMPLETED -> patient;
             case SET_SECOND_NAME -> {
@@ -68,7 +63,7 @@ public class PatientService {
         return patient;
     }
 
-    private void setBirthday(PatientEntity patient, String message) {
+    private void setBirthday(PatientEntity patient, String message) throws DateFormatException {
         SimpleDateFormat formaterFromMessage = new SimpleDateFormat("dd.MM.yyyy");
         formaterFromMessage.setLenient(false);
         try {
@@ -80,7 +75,7 @@ public class PatientService {
         }
     }
 
-    public Optional<PatientEntity> getPatientById(long patientId) {
+    public Optional<PatientEntity>  getPatientById(long patientId) {
         return repository.findById(patientId);
     }
 
