@@ -12,11 +12,13 @@ import ru.kusok_piroga.gorzdravbot.api.models.Doctor;
 import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.bot.exceptions.CreateTaskException;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.TimeConsistencyException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.TimeFormatException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.WrongPolyclinicForPatientException;
 import ru.kusok_piroga.gorzdravbot.producer.services.PatientService;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
@@ -40,12 +42,7 @@ public class TaskCreateCommandService implements ICommandService {
             return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
         }
 
-        try {
-            taskService.createTask(dialogId);
-            return printDistricts();
-        } catch (SaveException e) {
-            throw new CreateTaskException();
-        }
+        return printDistricts();
     }
 
     @Override

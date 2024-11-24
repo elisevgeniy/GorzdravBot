@@ -16,8 +16,6 @@ import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
-import ru.kusok_piroga.gorzdravbot.producer.exceptions.SaveException;
-import ru.kusok_piroga.gorzdravbot.producer.utils.TaskValidator;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -63,7 +61,7 @@ class TaskServiceTest {
     }
 
     @Test
-    void createTask() throws SaveException {
+    void createTask()  {
         taskService.createTask(1L);
 
         verify(taskRepository).save(any(TaskEntity.class));

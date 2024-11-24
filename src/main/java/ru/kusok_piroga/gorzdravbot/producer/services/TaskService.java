@@ -84,7 +84,7 @@ public class TaskService {
         }
     }
 
-    public void createTask(long dialogId) throws SaveException {
+    public void createTask(long dialogId) {
         clearUncompletedTask(dialogId);
 
         TaskEntity task = new TaskEntity();
@@ -92,11 +92,7 @@ public class TaskService {
         task.setDialogId(dialogId);
         task.setState(SET_DISTRICT);
 
-        try {
-            repository.save(task);
-        } catch (Exception e) {
-            throw new SaveException();
-        }
+        repository.save(task);
     }
 
     private void clearUncompletedTask(long dialogId) {
