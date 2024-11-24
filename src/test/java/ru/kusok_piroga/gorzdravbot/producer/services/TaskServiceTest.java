@@ -36,8 +36,6 @@ class TaskServiceTest {
     TaskRepository taskRepository;
     @MockBean
     PatientService patientService;
-    @MockBean
-    TaskValidator validator;
 
     @Autowired
     TaskService taskService;
