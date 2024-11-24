@@ -15,7 +15,7 @@ import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -135,7 +135,6 @@ class TaskServiceTest {
         );
     }
 
-
     @Test
     void fillTaskFields_state_changes_for_time_limits() {
         TaskEntity task = new TaskEntity();
@@ -201,6 +200,51 @@ class TaskServiceTest {
         TaskEntity savedTask = taskCaptor.getValue();
 
         assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_LOW_LIMITS);
+    }
+
+    @Test
+    void fillTaskFields_fail_by_patient() {
+        doReturn("").when(apiService).getPatientId(any(),any(),any(),any(),any());
+        doReturn(Optional.empty()).when(patientService).getPatientById(2L);
+
+        TaskEntity task = taskRepository.findById(1L).orElseThrow();
+        task.setState(TaskState.SET_PATIENT);
+
+
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "2")).isInstanceOf(NoSuchElementException.class);
+
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "1")).isInstanceOf(WrongPolyclinicForPatientException.class);
+
+        verify(taskRepository, times(0)).save(any(TaskEntity.class));
+    }
+
+    @Test
+    void fillTaskFields_fail_by_time() {
+        TaskEntity task = new TaskEntity();
+        task.setState(TaskState.SET_TIME_LOW_LIMITS);
+
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "1000")).isInstanceOf(TimeFormatException.class);
+        verify(taskRepository, times(0)).save(any(TaskEntity.class));
+
+        task.setLowTimeLimit("10:00");
+        task.setState(TaskState.SET_TIME_HIGH_LIMITS);
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "1000")).isInstanceOf(TimeFormatException.class);
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "09:00")).isInstanceOf(TimeConsistencyException.class);
+
+        ArgumentCaptor<TaskEntity> taskCaptor = ArgumentCaptor.forClass(TaskEntity.class);
+        verify(taskRepository).save(taskCaptor.capture());
+        TaskEntity savedTask = taskCaptor.getValue();
+
+        assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_LOW_LIMITS);
+    }
+
+    @Test
+    void fillTaskFields_fail_by_date() {
+        TaskEntity task = new TaskEntity();
+        task.setState(TaskState.SET_DATE_LIMITS);
+
+        assertThatThrownBy(() -> taskService.fillTaskFields(task, "1000")).isInstanceOf(DateFormatException.class);
+        verify(taskRepository, times(0)).save(any(TaskEntity.class));
     }
 
 }
