@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.bot.responses.DeleteMessageTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.bot.responses.DeleteMessageTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.recorder.models.NotifyToChatData;
 import ru.kusok_piroga.gorzdravbot.recorder.services.RecordService;
 
@@ -47,8 +47,11 @@ public class RecordCallbackUnit extends BaseCallbackUnit {
                     return new GenericTelegramResponse("Ошибка значения task");
                 }
 
-                recordService.makeRecord(task.get(), notifyToChatData.get().app());
-                return new DeleteMessageTelegramResponse();
+                if (recordService.makeRecord(task.get(), notifyToChatData.get().app())) {
+                    return new DeleteMessageTelegramResponse();
+                } else {
+                    return new GenericTelegramResponse("Ошибка получения номерка. Попробуйте снова");
+                }
             default:
                 log.warn("Callback unknown fn");
                 return new GenericTelegramResponse("Ошибка значения callback");
