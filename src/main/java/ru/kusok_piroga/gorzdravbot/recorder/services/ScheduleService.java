@@ -52,9 +52,7 @@ public class ScheduleService {
             if (recordService.isTimeToRecord(task)){
                 log.info("Task, id={}, will be recorded", task.getId());
                 if (!recordService.makeRecord(task, availableAppointments)){
-                    task.setCompleted(true);
-                    task = taskRepository.save(task);
-                    log.info("Task, id={}, recording success", task.getId());
+                    log.info("Task, id={}, recording fail", task.getId());
                 }
             }
         } else {
