@@ -4,5 +4,6 @@ import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 
 public interface ICommandService {
-    TelegramResponse execute(UpdateRequest request);
+    TelegramResponse processCommand(UpdateRequest request);
+    TelegramResponse processMessage(UpdateRequest request);
 }

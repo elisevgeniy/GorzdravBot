@@ -3,30 +3,26 @@ package ru.kusok_piroga.gorzdravbot.recorder.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
-import ru.kusok_piroga.gorzdravbot.callbacks.TaskCallbackChain;
-import ru.kusok_piroga.gorzdravbot.callbacks.utils.CallbackEncoder;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
+import ru.kusok_piroga.gorzdravbot.bot.services.RawSendService;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import static ru.kusok_piroga.gorzdravbot.common.utils.DateConverter.getPrintableAppointmentDateTime;
+import static ru.kusok_piroga.gorzdravbot.utils.DateConverter.getPrintableAppointmentDateTime;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class RecordService {
-    private final TelegramClient telegramClient;
+    private final RawSendService sendService;
     private final TaskRepository taskRepository;
     private final ApiService api;
     private final CallbackEncoder callbackEncoder;
@@ -59,32 +55,22 @@ public class RecordService {
     }
 
     public boolean makeRecord(TaskEntity task, AvailableAppointment availableAppointment){
-        log.info("Task, id={}, making record", task.getId());
-        if (Boolean.TRUE.equals(task.getCompleted())){
-            log.info("Task, id={}, record fail, task already completed", task.getId());
-            return false;
-        }
-
-        boolean isAppointmentCreated = api.createAppointment(
-                task.getPolyclinicId(),
-                availableAppointment.id(),
-                task.getPatientEntity().getPatientId()
-        );
-
-        log.info("Task, id={}, record result = {}", task.getId(), isAppointmentCreated);
-
-        if (isAppointmentCreated){
-            task.setCompleted(true);
-            task.setRecordedAppointmentId(availableAppointment.id());
-            taskRepository.save(task);
-
+        if (crateAppointment(task, availableAppointment.id())){
             messageToChat(task, availableAppointment);
+            return true;
         }
-
-        return isAppointmentCreated;
+        return false;
     }
 
     public boolean makeRecord(TaskEntity task, String appointmentId){
+        if (crateAppointment(task, appointmentId)){
+            messageToChat(task, "Вы записаны. Номерок '%s'".formatted(appointmentId));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean crateAppointment(TaskEntity task, String appointmentId){
         log.info("Task, id={}, making record", task.getId());
         if (Boolean.TRUE.equals(task.getCompleted())){
             log.info("Task, id={}, record fail, task already completed", task.getId());
@@ -103,54 +89,40 @@ public class RecordService {
             task.setCompleted(true);
             task.setRecordedAppointmentId(appointmentId);
             taskRepository.save(task);
-
-            messageToChat(task, "Вы записаны. Номерок '%s'".formatted(appointmentId));
         }
 
         return isAppointmentCreated;
     }
 
-    private boolean messageToChat(TaskEntity task, AvailableAppointment appointment) {
-        return messageToChat(task,
+    private void messageToChat(TaskEntity task, AvailableAppointment appointment) {
+        sendService.sendMessage(
+                task.getDialogId(),
                 "Вы записаны в поликлинику %s к %s, %s на %s"
                         .formatted(
                                 task.getPolyclinicId(),
                                 task.getDoctorId(),
                                 task.getSpecialityId(),
                                 getPrintableAppointmentDateTime(appointment.visitStart())
+                        ),
+                List.of(
+                        Map.of(
+                                "Отменить",
+                                getCancelCallbackData(task)
                         )
+                )
         );
     }
 
-    private boolean messageToChat(TaskEntity task, String message) {
-        SendMessage telegramMessage = SendMessage
-                .builder()
-                .chatId(task.getDialogId())
-                .text(message)
-                .replyMarkup(InlineKeyboardMarkup
-                        .builder()
-                        .keyboard(List.of(
-                                new InlineKeyboardRow(
-                                        InlineKeyboardButton
-                                                .builder()
-                                                .text("Отменить")
-                                                .callbackData(getCancelCallbackData(task))
-                                                .build()
-                                )
-                        ))
-                        .build())
-                .build();
-        try {
-            telegramClient.execute(telegramMessage);
-            return true;
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+    private void messageToChat(TaskEntity task, String text) {
+        sendService.sendMessage(
+                task.getDialogId(),
+                text
+        );
     }
 
     private String getCancelCallbackData(TaskEntity task) {
         return callbackEncoder.encode(
-                TaskCallbackChain.FN_CANCEL,
+                TaskCallbackUnit.FN_CANCEL,
                 task.getId()
         );
     }

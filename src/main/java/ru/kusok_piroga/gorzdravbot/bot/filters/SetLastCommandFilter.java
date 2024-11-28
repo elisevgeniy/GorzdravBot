@@ -6,9 +6,11 @@ import io.github.drednote.telegram.filter.post.PostUpdateFilter;
 import io.github.drednote.telegram.filter.pre.PriorityPreUpdateFilter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.services.LastCommandService;
 
+@Slf4j
 @Component
 @TelegramScope
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class SetLastCommandFilter implements PriorityPreUpdateFilter, PostUpdate
 
     @Override
     public void preFilter(@NonNull UpdateRequest request) {
-        System.out.printf("В чат %d пришло сообщение \"%s\" типа %s. Тип запроса - %s %n", request.getChatId(), request.getText(), request.getMessageTypes(), request.getRequestType());
+        log.info("Dialog id = '{}', message text=\"{}\", message type = '{}', request type = '{}'", request.getChatId(), request.getText(), request.getMessageTypes(), request.getRequestType());
     }
 
     @Override

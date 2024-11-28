@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
-import ru.kusok_piroga.gorzdravbot.common.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.common.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -52,9 +52,7 @@ public class ScheduleService {
             if (recordService.isTimeToRecord(task)){
                 log.info("Task, id={}, will be recorded", task.getId());
                 if (!recordService.makeRecord(task, availableAppointments)){
-                    task.setCompleted(true);
-                    task = taskRepository.save(task);
-                    log.info("Task, id={}, recording success", task.getId());
+                    log.info("Task, id={}, recording fail", task.getId());
                 }
             }
         } else {
