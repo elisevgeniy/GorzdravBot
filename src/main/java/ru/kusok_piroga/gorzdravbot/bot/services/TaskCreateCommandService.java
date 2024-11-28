@@ -42,6 +42,8 @@ public class TaskCreateCommandService implements ICommandService {
             return new GenericTelegramResponse("Для добавления задачи требуется заранее добавить пациента с помощью команды " + Commands.COMMAND_ADD_PATIENT);
         }
 
+        taskService.createTask(dialogId);
+
         return printDistricts();
     }
 
