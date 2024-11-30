@@ -4,6 +4,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskTimeLimitsConverter;
 
 import java.util.Date;
 
@@ -32,6 +33,9 @@ public class TaskEntity {
     private String lowTimeLimit;
 
     private String highTimeLimit;
+
+    @Convert(converter = TaskTimeLimitsConverter.class)
+    private TaskTimeLimits timeLimits;
 
     private Date highDateLimit;
 
