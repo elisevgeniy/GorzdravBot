@@ -10,7 +10,7 @@ public class TaskTimeLimitsConverter implements AttributeConverter<TaskTimeLimit
 
     @Override
     public String convertToDatabaseColumn(TaskTimeLimits attribute) {
-        return attribute.toString();
+        return (attribute == null) ? "" : attribute.toString();
     }
 
     @Override

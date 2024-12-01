@@ -47,7 +47,7 @@ public class TaskTimeLimits implements Serializable {
             return Arrays.stream(s.split(","))
                     .map(this::getRange)
                     .toList();
-        } catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             throw new TimeLimitParseException();
         }
     }
@@ -73,6 +73,30 @@ public class TaskTimeLimits implements Serializable {
         }
     }
 
+    public boolean validateTime(LocalTime time) {
+        for (var range : includedLimits) {
+            if (!(
+                    time.equals(range.get(0)) ||
+                    time.equals(range.get(1)) ||
+                    time.isAfter(range.get(0)) &&
+                    time.isBefore(range.get(1))
+            )) {
+                return false;
+            }
+        }
+        for (var range : excludedLimits) {
+            if (
+                    time.equals(range.get(0)) ||
+                    time.equals(range.get(1)) ||
+                    time.isAfter(range.get(0)) &&
+                    time.isBefore(range.get(1))
+            ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -95,7 +119,7 @@ public class TaskTimeLimits implements Serializable {
                     .append(range.get(1).toString())
                     .append(",")
             );
-            result.deleteCharAt(result.length()-1);
+            result.deleteCharAt(result.length() - 1);
         }
 
         return result.toString().trim();

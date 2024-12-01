@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
-import ru.kusok_piroga.gorzdravbot.producer.utils.TaskValidator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,8 +36,7 @@ public class TaskService {
             SET_SPECIALITY, new SpecialityFiller(),
             SET_DOCTOR, new DoctorFiller(),
             SET_PATIENT, new PatientFiller(),
-            SET_TIME_LOW_LIMITS, new LowTimeLimitFiller(),
-            SET_TIME_HIGH_LIMITS, new HighTimeLimitFiller(),
+            SET_TIME_LIMITS, new TimeLimitFiller(),
             SET_DATE_LIMITS, new DateFiller()
     );
 
@@ -176,40 +176,20 @@ public class TaskService {
             patientService.savePatient(patient.get());
 
             task.setPatientEntity(patient.get());
-            task.setState(TaskState.SET_TIME_LOW_LIMITS);
+            task.setState(TaskState.SET_TIME_LIMITS);
 
             return repository.save(task);
         }
     }
 
-    private class LowTimeLimitFiller implements TaskFieldFiller {
+    private class TimeLimitFiller implements TaskFieldFiller {
         @Override
         public TaskEntity fill(TaskEntity task, String value) throws TimeFormatException {
-            if (TaskValidator.validateTime(value)) {
-                task.setState(SET_TIME_HIGH_LIMITS);
-                task.setLowTimeLimit(value);
-                return repository.save(task);
-            } else {
-                throw new TimeFormatException();
-            }
-        }
-    }
-
-    private class HighTimeLimitFiller implements TaskFieldFiller {
-        @Override
-        public TaskEntity fill(TaskEntity task, String value) throws TimeFormatException, TimeConsistencyException {
-            if (TaskValidator.validateTime(value)) {
-                task.setHighTimeLimit(value);
-
-                if (!TaskValidator.validateTaskTimeLimits(task)) {
-                    task.setState(SET_TIME_LOW_LIMITS);
-                    repository.save(task);
-                    throw new TimeConsistencyException();
-                }
-
+            try {
                 task.setState(SET_DATE_LIMITS);
+                task.setTimeLimits(new TaskTimeLimits(value));
                 return repository.save(task);
-            } else {
+            } catch (TimeLimitParseException e) {
                 throw new TimeFormatException();
             }
         }
