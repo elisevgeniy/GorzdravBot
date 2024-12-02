@@ -187,7 +187,9 @@ public class TaskService {
         public TaskEntity fill(TaskEntity task, String value) throws TimeFormatException {
             try {
                 task.setState(SET_DATE_LIMITS);
-                task.setTimeLimits(new TaskTimeLimits(value));
+                if (!value.trim().equalsIgnoreCase("дальше")) {
+                    task.setTimeLimits(new TaskTimeLimits(value));
+                }
                 return repository.save(task);
             } catch (TimeLimitParseException e) {
                 throw new TimeFormatException();

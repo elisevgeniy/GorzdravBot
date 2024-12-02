@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,13 +139,17 @@ class TaskServiceTest {
         );
     }
 
-    @Test
-    void fillTaskFields_state_changes_for_time_limits() {
+    @ParameterizedTest
+    @CsvSource({
+            "10:00-12:00",
+            "дальше"
+    })
+    void fillTaskFields_state_changes_for_time_limits(String input) {
         TaskEntity task = new TaskEntity();
         task.setState(TaskState.SET_TIME_LIMITS);
 
         try {
-            taskService.fillTaskFields(task, "10:00-12:00");
+            taskService.fillTaskFields(task, input);
         } catch (Exception e) {
             throw new AssertionFailure(e.getMessage());
         }
