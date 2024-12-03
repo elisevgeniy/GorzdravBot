@@ -1,6 +1,5 @@
 package ru.kusok_piroga.gorzdravbot.domain.models;
 
-import org.hibernate.AssertionFailure;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -69,7 +68,7 @@ class TaskTimeLimitsTest {
                     .isEqualTo(exclude);
 
         } catch (TimeLimitParseException e) {
-            throw new AssertionFailure(e.getMessage());
+            throw new AssertionError(e.getMessage());
         }
     }
 
