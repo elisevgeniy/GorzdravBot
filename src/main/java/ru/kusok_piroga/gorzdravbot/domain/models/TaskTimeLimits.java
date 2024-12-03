@@ -7,20 +7,22 @@ import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Setter
 @Getter
 public class TaskTimeLimits implements Serializable {
-    private List<List<LocalTime>> includedLimits = Collections.emptyList();
-    private List<List<LocalTime>> excludedLimits = Collections.emptyList();
+    private List<List<LocalTime>> includedLimits = new ArrayList<>();
+    private List<List<LocalTime>> excludedLimits = new ArrayList<>();
 
     /**
      * @param rawLimitString string with type "(чч:мм - чч:мм, чч:мм - чч:мм)?(\n| )?(!чч:мм - чч:мм, чч:мм - чч:мм)?"
      */
     public TaskTimeLimits(String rawLimitString) throws TimeLimitParseException {
+        if (rawLimitString.isEmpty()) return;
+
         int indexOfNegativeSign = rawLimitString.indexOf("!");
         switch (indexOfNegativeSign) {
             case 0 -> parseExcludedLimits(rawLimitString.substring(1));

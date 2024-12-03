@@ -53,6 +53,11 @@ class TaskTimeLimitsTest {
                                         LocalTime.parse("09:30")
                                 )
                         )
+                ),
+                Arguments.of(
+                        "",
+                        List.of(),
+                        List.of()
                 )
         );
     }
@@ -74,7 +79,6 @@ class TaskTimeLimitsTest {
 
     static Stream<Arguments> getThrowsData() {
         return Stream.of(
-                Arguments.of(""),
                 Arguments.of("10:00 - "),
                 Arguments.of("- 12:00,13:00 -16:00 \n ! 09:00- 09:30"),
                 Arguments.of("10:00 - 1adasdasd2:00,13:00 -16:00 \n ! 09:00- 09:30"),

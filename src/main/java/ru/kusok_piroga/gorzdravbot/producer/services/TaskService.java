@@ -4,16 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
-import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
+import ru.kusok_piroga.gorzdravbot.domain.models.*;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,7 +33,7 @@ public class TaskService {
             SET_DOCTOR, new DoctorFiller(),
             SET_PATIENT, new PatientFiller(),
             SET_TIME_LIMITS, new TimeLimitFiller(),
-            SET_DATE_LIMITS, new DateFiller()
+            SET_DATE_LIMITS, new DateLimitFiller()
     );
 
     public List<TaskEntity> getCompletedTaskList(long chatId) {
@@ -197,16 +193,14 @@ public class TaskService {
         }
     }
 
-    private class DateFiller implements TaskFieldFiller {
+    private class DateLimitFiller implements TaskFieldFiller {
         @Override
         public TaskEntity fill(TaskEntity task, String value) throws DateFormatException {
-            SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
-            formater.setLenient(false);
             try {
-                task.setHighDateLimit(formater.parse(value));
+                task.setDateLimits(new TaskDateLimits(value));
                 task.setState(SETUPED);
                 return repository.save(task);
-            } catch (ParseException e) {
+            } catch (DateLimitParseException e) {
                 throw  new DateFormatException();
             }
         }
