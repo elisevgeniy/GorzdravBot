@@ -29,9 +29,3 @@ cd GorzdravBot
       1. Зарегистрировать бота, получть `name` и `token` бота. Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot) 
       2. Скопировать `cp ./build/.env_example ./build/.env` и заполнить `.env` 
       3. Запустить приложение `cd build && docker compose up --build`          
-       
-
-## TODO  
-- [ ] #13 Change RuntimeExceptions to sepatate Exceptions
-- [ ] #14 Add tests
-- [ ] Переработать архитектуру
