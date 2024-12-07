@@ -1,11 +1,10 @@
 FROM maven:latest AS builder
 
 WORKDIR /build
-COPY ../.mvn .mvn
 COPY ../pom.xml ./
-RUN mvn dependency:go-offline
 COPY ../src ./src
-RUN mvn clean install
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean install
 
 FROM openjdk:17.0.2-slim-bullseye AS run
 
