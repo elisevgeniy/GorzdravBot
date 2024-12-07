@@ -29,7 +29,9 @@ public class TaskListCommandService implements ICommandService {
             Задание №%d
             ФИО: %s %s %s
             Др: %s
-            Условия записи: между %s и %s до %s
+            Условия записи:
+            - по времени: %s
+            - по датам: %s
             Поликлиника: %s
             Специалист: %s
             Врач: %s
@@ -118,9 +120,8 @@ public class TaskListCommandService implements ICommandService {
                         task.getPatientEntity().getFirstName(),
                         task.getPatientEntity().getMiddleName(),
                         formater.format(task.getPatientEntity().getBirthday()),
-                        task.getLowTimeLimit(),
-                        task.getHighTimeLimit(),
-                        formater.format(task.getHighDateLimit()),
+                        (task.getTimeLimits().toString().isEmpty()) ? "нет" : task.getTimeLimits(),
+                        task.getDateLimits(),
                         task.getPolyclinicId(),
                         task.getSpecialityId(),
                         task.getDoctorId(),

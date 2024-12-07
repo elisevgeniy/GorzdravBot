@@ -2,37 +2,33 @@ package ru.kusok_piroga.gorzdravbot.recorder.utils;
 
 import lombok.experimental.UtilityClass;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static ru.kusok_piroga.gorzdravbot.utils.DateConverter.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @UtilityClass
 public class ConstraintChecker {
     public static boolean check(TaskEntity task, AvailableAppointment appointment){
         return checkLimitConstraint(
                 appointment.visitStart(),
-                task.getLowTimeLimit(),
-                task.getHighTimeLimit(),
-                task.getHighDateLimit()
+                task.getTimeLimits(),
+                task.getDateLimits()
         );
     }
 
-    private static boolean checkLimitConstraint(String visitStart, String lowTimeLimitStr, String highTimeLimitStr, Date highDateLimit) {
-        DateFormat limitFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static boolean checkLimitConstraint(String visitStart, TaskTimeLimits timeLimits, TaskDateLimits dateLimits) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         try {
-            Date visitStartTime = parseAppointmentDate(visitStart);
-            Date lowTimeLimit = minusTenMin(limitFormatter.parse(visitStart.substring(0, 11) + lowTimeLimitStr));
-            Date highTimeLimit = plusTenMin(limitFormatter.parse(visitStart.substring(0, 11) + highTimeLimitStr));
-            Date highDateLimitPlusDay = plusOneDay(highDateLimit);
+            LocalDateTime visitStartDateTime = LocalDateTime.parse(visitStart, formatter);
 
-            return lowTimeLimit.before(visitStartTime) && visitStartTime.before(highTimeLimit) && visitStartTime.before(highDateLimitPlusDay);
+            return timeLimits.validateTime(visitStartDateTime.toLocalTime()) &&
+                   dateLimits.validateDate(visitStartDateTime.toLocalDate());
 
-        } catch (ParseException e) {
+        } catch (DateTimeParseException e) {
             return false;
         }
     }

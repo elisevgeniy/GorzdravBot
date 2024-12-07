@@ -5,5 +5,11 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/changelogs/0-init.sql
+  - changeSet:
+      id:  add-new-task-limits
+      author:  elisevgeniy
+      changes:
+        - sqlFile:
+            path: db/changelog/changelogs/01-new-task-limits.sql
 
 

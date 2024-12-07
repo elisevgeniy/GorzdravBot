@@ -82,8 +82,7 @@ public class TaskCreateCommandService implements ICommandService {
             case SET_POLYCLINIC -> printPolyclinics(task.getDistrictId());
             case SET_SPECIALITY -> printSpecialities(task.getPolyclinicId());
             case SET_DOCTOR -> printDoctors(task.getPolyclinicId(), task.getSpecialityId());
-            case SET_TIME_LOW_LIMITS -> printTimeLowLimits();
-            case SET_TIME_HIGH_LIMITS -> printTimeHighLimits();
+            case SET_TIME_LIMITS -> printTimeLimits();
             case SET_DATE_LIMITS -> printDateLimit();
             case SET_PATIENT -> patientListCommandService.printPatientListForChoose(task.getDialogId());
             case SETUPED -> new GenericTelegramResponse("Задача создана. Список задач: " + Commands.COMMAND_LIST_TASK);
@@ -150,18 +149,25 @@ public class TaskCreateCommandService implements ICommandService {
                 new InlineButtonTelegramResponse(answerText, buttons);
     }
 
-    private TelegramResponse printTimeLowLimits() {
-        String answerText = "Пришлите нижний предел записи чч:мм";
-        return new GenericTelegramResponse(answerText);
-    }
-
-    private TelegramResponse printTimeHighLimits() {
-        String answerText = "Пришлите верхний предел записи чч:мм";
+    private TelegramResponse printTimeLimits() {
+        String answerText = """
+                Пришлите одним сообщением на разных строках:
+                1. Диапазон времени, в котором искать номерки в формате
+                чч:мм - чч:мм, чч:мм - чч:мм (по умолчанию 00:00 - 23:59)
+                2. Диапазон времени, в котором НЕ искать номерки в формате
+                !чч:мм - чч:мм, чч:мм - чч:мм (по умолчанию не будет установлен)
+                Для пропуска настройки пришлите "дальше" """;
         return new GenericTelegramResponse(answerText);
     }
 
     private TelegramResponse printDateLimit() {
-        String answerText = "Пришлите дату до которой искать номерки дд.мм.гггг";
+        String answerText = """
+                Пришлите дату до которой искать номерки в формате
+                дд.мм.гггг
+                или диапазон дат, в котором искать номерки в формате
+                дд.мм.гггг - дд.мм.гггг, дд.мм.гггг - дд.мм.гггг
+                или диапазон дат, в котором искать и НЕ номерки в формате
+                дд.мм.гггг - дд.мм.гггг, дд.мм.гггг - дд.мм.гггг !дд.мм.гггг - дд.мм.гггг, дд.мм.гггг - дд.мм.гггг""";
         return new GenericTelegramResponse(answerText);
     }
 }

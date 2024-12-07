@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,10 @@ import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
-import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.TimeFormatException;
+import ru.kusok_piroga.gorzdravbot.producer.exceptions.WrongPolyclinicForPatientException;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -135,13 +139,17 @@ class TaskServiceTest {
         );
     }
 
-    @Test
-    void fillTaskFields_state_changes_for_time_limits() {
+    @ParameterizedTest
+    @CsvSource({
+            "10:00-12:00",
+            "дальше"
+    })
+    void fillTaskFields_state_changes_for_time_limits(String input) {
         TaskEntity task = new TaskEntity();
-        task.setState(TaskState.SET_TIME_LOW_LIMITS);
+        task.setState(TaskState.SET_TIME_LIMITS);
 
         try {
-            taskService.fillTaskFields(task, "10:00");
+            taskService.fillTaskFields(task, input);
         } catch (Exception e) {
             throw new AssertionFailure(e.getMessage());
         }
@@ -149,17 +157,6 @@ class TaskServiceTest {
         ArgumentCaptor<TaskEntity> taskCaptor = ArgumentCaptor.forClass(TaskEntity.class);
         verify(taskRepository).save(taskCaptor.capture());
         TaskEntity savedTask = taskCaptor.getValue();
-
-        assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_HIGH_LIMITS);
-
-        try {
-            taskService.fillTaskFields(task, "12:00");
-        } catch (Exception e) {
-            throw new AssertionFailure(e.getMessage());
-        }
-
-        verify(taskRepository, times(2)).save(taskCaptor.capture());
-        savedTask = taskCaptor.getValue();
 
         assertThat(savedTask.getState()).isSameAs(TaskState.SET_DATE_LIMITS);
     }
@@ -199,7 +196,7 @@ class TaskServiceTest {
         verify(taskRepository).save(taskCaptor.capture());
         TaskEntity savedTask = taskCaptor.getValue();
 
-        assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_LOW_LIMITS);
+        assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_LIMITS);
     }
 
     @Test
@@ -221,21 +218,10 @@ class TaskServiceTest {
     @Test
     void fillTaskFields_fail_by_time() {
         TaskEntity task = new TaskEntity();
-        task.setState(TaskState.SET_TIME_LOW_LIMITS);
+        task.setState(TaskState.SET_TIME_LIMITS);
 
         assertThatThrownBy(() -> taskService.fillTaskFields(task, "1000")).isInstanceOf(TimeFormatException.class);
         verify(taskRepository, times(0)).save(any(TaskEntity.class));
-
-        task.setLowTimeLimit("10:00");
-        task.setState(TaskState.SET_TIME_HIGH_LIMITS);
-        assertThatThrownBy(() -> taskService.fillTaskFields(task, "1000")).isInstanceOf(TimeFormatException.class);
-        assertThatThrownBy(() -> taskService.fillTaskFields(task, "09:00")).isInstanceOf(TimeConsistencyException.class);
-
-        ArgumentCaptor<TaskEntity> taskCaptor = ArgumentCaptor.forClass(TaskEntity.class);
-        verify(taskRepository).save(taskCaptor.capture());
-        TaskEntity savedTask = taskCaptor.getValue();
-
-        assertThat(savedTask.getState()).isSameAs(TaskState.SET_TIME_LOW_LIMITS);
     }
 
     @Test
