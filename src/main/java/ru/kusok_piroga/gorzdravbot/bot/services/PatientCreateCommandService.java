@@ -51,7 +51,7 @@ public class PatientCreateCommandService implements ICommandService {
 
         return switch (patient.getState()) {
             case SET_FIRST_NAME -> new GenericTelegramResponse("Введите имя:");
-            case SET_SECOND_NAME -> new GenericTelegramResponse("Введите Фамилию:");
+            case SET_SECOND_NAME -> new GenericTelegramResponse("Введите фамилию:");
             case SET_MIDDLE_NAME -> new GenericTelegramResponse("Введите отчество:");
             case SET_BIRTHDAY -> new GenericTelegramResponse("Введите дату рождения в формате ДД.ММ.ГГГГ:");
             case COMPLETED -> new GenericTelegramResponse("Добавлен - %s %s %s, дата рождения %s".formatted(
