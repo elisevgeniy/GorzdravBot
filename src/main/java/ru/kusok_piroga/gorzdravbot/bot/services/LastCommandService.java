@@ -33,7 +33,7 @@ public class LastCommandService {
 
     public void setLastCommand(Long dialogId, String command){
         DialogEntity dialogEntity = new DialogEntity();
-        dialogEntity.setId(dialogId);
+        dialogEntity.setDialogId(dialogId);
         dialogEntity.setLastCommand(command);
         repository.save(dialogEntity);
 

@@ -1,15 +1,18 @@
 package ru.kusok_piroga.gorzdravbot.bot.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 @Entity
-@Table(name="last_commands")
+@Table(name = "last_commands")
 @Data
 public class DialogEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @Unique
+    Long dialogId;
 
     String lastCommand;
 }

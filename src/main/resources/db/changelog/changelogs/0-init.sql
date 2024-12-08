@@ -30,7 +30,7 @@ create table tasks
 
 create table last_commands
 (
-    id           bigserial primary key,
+    dialog_id     bigint primary key,
     last_command varchar(255)
 );
 
