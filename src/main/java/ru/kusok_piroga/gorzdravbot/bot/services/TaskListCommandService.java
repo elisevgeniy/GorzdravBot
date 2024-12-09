@@ -7,6 +7,7 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
@@ -35,7 +36,9 @@ public class TaskListCommandService implements ICommandService {
             Поликлиника: %s
             Специалист: %s
             Врач: %s
-            Номерок: %s""";
+            Номерок: %s
+            Пропускаются номерки:
+            %s""";
 
     @Override
     public TelegramResponse processCommand(UpdateRequest request) {
@@ -128,7 +131,13 @@ public class TaskListCommandService implements ICommandService {
                         (task.getRecordedAppointmentId() == null) ?
                                 "не взят"
                                 :
-                                task.getRecordedAppointmentId()
+                                task.getRecordedAppointmentId(),
+                        (task.getSkippedAppointments().isEmpty()) ?
+                                "нет"
+                                :
+                                task.getSkippedAppointments().stream()
+                                        .map(SkipAppointmentEntity::getAppointmentId)
+                                        .toList().toString()
                 ),
                 List.of(buttons)
         );

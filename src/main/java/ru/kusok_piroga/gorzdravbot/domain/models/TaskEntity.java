@@ -4,10 +4,13 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskDateLimitsConverter;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskTimeLimitsConverter;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="tasks")
@@ -47,4 +50,7 @@ public class TaskEntity {
 
     @Nonnull
     private Boolean completed = false;
+
+    @OneToMany(mappedBy = "task", orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<SkipAppointmentEntity> skippedAppointments = new LinkedHashSet<>();
 }

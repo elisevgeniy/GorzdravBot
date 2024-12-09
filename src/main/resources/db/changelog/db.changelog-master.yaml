@@ -11,5 +11,11 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/changelogs/01-new-task-limits.sql
+  - changeSet:
+      id:  add-skip-appointments
+      author:  elisevgeniy
+      changes:
+        - sqlFile:
+            path: db/changelog/changelogs/02-add-skip-appointments.sql
 
 

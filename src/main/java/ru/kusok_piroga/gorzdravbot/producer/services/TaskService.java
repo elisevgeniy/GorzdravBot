@@ -3,6 +3,8 @@ package ru.kusok_piroga.gorzdravbot.producer.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
@@ -25,6 +27,7 @@ public class TaskService {
     private final ApiService api;
     private final TaskRepository repository;
     private final PatientService patientService;
+    private final SkipAppointmentRepository skipAppointmentRepository;
 
     private final Map<TaskState, TaskFieldFiller> taskFillers = Map.of(
             SET_DISTRICT, new DistrictFiller(),
@@ -204,5 +207,20 @@ public class TaskService {
                 throw  new DateFormatException();
             }
         }
+    }
+
+    public boolean skipAppointment(Long taskId, String appointmentId){
+
+        Optional<TaskEntity> task = repository.findById(taskId);
+
+        if (task.isEmpty()) return false;
+
+        SkipAppointmentEntity skipAppointment = new SkipAppointmentEntity();
+        skipAppointment.setAppointmentId(appointmentId);
+        skipAppointment.setTask(task.get());
+
+        skipAppointmentRepository.save(skipAppointment);
+
+        return true;
     }
 }
