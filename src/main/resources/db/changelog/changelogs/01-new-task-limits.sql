@@ -1,6 +1,3 @@
--- liquibase formatted sql
-
--- changeset elisevgeniy:1733583229838-1
 ALTER TABLE tasks
     ADD date_limits VARCHAR(255);
 ALTER TABLE tasks
@@ -21,7 +18,6 @@ set (date_limits, time_limits) =
          )
             );
 
--- changeset elisevgeniy:1733583229838-3
 ALTER TABLE tasks
     DROP COLUMN high_date_limit;
 ALTER TABLE tasks
@@ -29,3 +25,18 @@ ALTER TABLE tasks
 ALTER TABLE tasks
     DROP COLUMN low_time_limit;
 
+ALTER TABLE tasks DROP CONSTRAINT tasks_state_check;
+ALTER TABLE tasks ADD CONSTRAINT tasks_state_check
+    CHECK ((state)::text = ANY (
+        (ARRAY [
+            'INIT'::character varying,
+            'SET_PATIENT'::character varying,
+            'SET_DISTRICT'::character varying,
+            'SET_POLYCLINIC'::character varying,
+            'SET_SPECIALITY'::character varying,
+            'SET_DOCTOR'::character varying,
+            'SET_TIME_LIMITS'::character varying,
+            'SET_DATE_LIMITS'::character varying,
+            'SETUPED'::character varying
+            ])::text[]
+        ));
