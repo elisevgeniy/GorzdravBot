@@ -15,8 +15,7 @@ import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -114,7 +113,7 @@ public class TaskListCommandService implements ICommandService {
     @NotNull
     private InlineButtonTelegramResponse formTaskCallbackButton(TaskEntity task, Map<String, String> buttons) {
 
-        DateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+        DateTimeFormatter formater = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         return new InlineButtonTelegramResponse(
                 TASK_DISC.formatted(
@@ -122,7 +121,7 @@ public class TaskListCommandService implements ICommandService {
                         task.getPatientEntity().getSecondName(),
                         task.getPatientEntity().getFirstName(),
                         task.getPatientEntity().getMiddleName(),
-                        formater.format(task.getPatientEntity().getBirthday()),
+                        task.getPatientEntity().getBirthday().format(formater),
                         (task.getTimeLimits().toString().isEmpty()) ? "нет" : task.getTimeLimits(),
                         task.getDateLimits(),
                         task.getPolyclinicId(),

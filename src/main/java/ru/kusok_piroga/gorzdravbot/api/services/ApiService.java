@@ -7,9 +7,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.kusok_piroga.gorzdravbot.api.models.*;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,7 +30,7 @@ public class ApiService {
     private static final String PATH_FIND_PATIENT = "/_api/api/v2/patient/search";
 
     private final WebClient webClient = WebClient.create();
-    private final SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd");
+    DateTimeFormatter dateFormater = DateTimeFormatter.ISO_DATE;
 
     public List<District> getDistricts(){
         DistrictsResponse response = webClient
@@ -144,7 +144,7 @@ public class ApiService {
         }
     }
 
-    public String getPatientId(Integer polyclinicId, String firstName, String lastName, String middleName, Date birthdate){
+    public String getPatientId(Integer polyclinicId, String firstName, String lastName, String middleName, LocalDate birthdate){
         FindPatientResponse response = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -155,7 +155,7 @@ public class ApiService {
                         .queryParam("firstName", firstName)
                         .queryParam("lastName", lastName)
                         .queryParam("middleName", middleName)
-                        .queryParam("birthdate", dateFormater.format(birthdate))
+                        .queryParam("birthdate", birthdate.format(dateFormater))
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()

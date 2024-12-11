@@ -9,7 +9,7 @@ import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class ScheduleService {
             log.info("Task, id={}, try to notify", task.getId());
 
             if (notifyService.needNotify(task) && notifyService.notifyToChat(task, availableAppointments)) {
-                task.setLastNotify(new Date());
+                task.setLastNotify(LocalDateTime.now());
                 task = taskRepository.save(task);
                 log.info("Task, id={}, notification success", task.getId());
                 return;

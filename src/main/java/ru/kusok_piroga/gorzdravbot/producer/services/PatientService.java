@@ -9,8 +9,9 @@ import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,13 +65,12 @@ public class PatientService {
     }
 
     private void setBirthday(PatientEntity patient, String message) throws DateFormatException {
-        SimpleDateFormat formaterFromMessage = new SimpleDateFormat("dd.MM.yyyy");
-        formaterFromMessage.setLenient(false);
+        DateTimeFormatter formater = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         try {
             patient.setBirthday(
-                    formaterFromMessage.parse(message)
+                    LocalDate.parse(message, formater)
             );
-        } catch (ParseException e) {
+        } catch (DateTimeParseException e) {
             throw new DateFormatException();
         }
     }
