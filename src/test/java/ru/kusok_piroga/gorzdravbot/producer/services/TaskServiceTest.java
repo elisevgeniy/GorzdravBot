@@ -23,7 +23,7 @@ import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.TimeFormatException;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.WrongPolyclinicForPatientException;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -56,7 +56,7 @@ class TaskServiceTest {
         patient.setFirstName("fn");
         patient.setSecondName("sn");
         patient.setMiddleName("mn");
-        patient.setBirthday(new Date());
+        patient.setBirthday(LocalDate.now());
 
         TaskEntity task = new TaskEntity();
         task.setId(1L);

@@ -8,7 +8,7 @@ import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -72,7 +72,7 @@ class ScheduleServiceTest {
                 .getValidAvailableAppointments(any());
 
         TaskEntity task = new TaskEntity();
-        task.setLastNotify(new Date());
+        task.setLastNotify(LocalDateTime.now());
 
         scheduleService.taskProcess(task);
 

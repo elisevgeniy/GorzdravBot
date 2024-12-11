@@ -11,8 +11,8 @@ import ru.kusok_piroga.gorzdravbot.bot.services.RawSendService;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class RecordService {
     private final CallbackEncoder callbackEncoder;
 
     public static final int DELAY_FOR_RECORD_VALUE = 5;
-    public static final int DELAY_FOR_RECORD_UNIT = Calendar.MINUTE;
+    public static final ChronoUnit DELAY_FOR_RECORD_UNIT = ChronoUnit.MINUTES;
 
     public boolean isTimeToRecord(TaskEntity task) {
         log.info("Task, id={}, isTimeToRecord check", task.getId());
@@ -37,13 +37,9 @@ public class RecordService {
             return false;
         }
 
-        Calendar notifyLowLimitCal = Calendar.getInstance();
-        notifyLowLimitCal.setTime(new Date());
-        notifyLowLimitCal.add(DELAY_FOR_RECORD_UNIT, -1 * DELAY_FOR_RECORD_VALUE);
+        LocalDateTime notifyLowLimit = LocalDateTime.now().minus(DELAY_FOR_RECORD_VALUE, DELAY_FOR_RECORD_UNIT);
 
-        Date notifyLowLimit = notifyLowLimitCal.getTime();
-
-        boolean result = task.getLastNotify().before(notifyLowLimit);
+        boolean result = task.getLastNotify().isBefore(notifyLowLimit);
 
         log.info("Task, id={}, isTimeToRecord = {}", task.getId(), result);
 

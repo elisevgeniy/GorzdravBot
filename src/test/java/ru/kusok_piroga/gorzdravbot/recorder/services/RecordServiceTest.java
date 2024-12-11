@@ -11,9 +11,7 @@ import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -40,14 +38,13 @@ class RecordServiceTest {
         assertThat(recordService.isTimeToRecord(task))
                 .isFalse();
 
-        task.setLastNotify(new Date());
+        task.setLastNotify(LocalDateTime.now());
 
         assertThat(recordService.isTimeToRecord(task))
                 .isFalse();
 
-        Instant earlierNotifyDate = Instant.now();
-        earlierNotifyDate = earlierNotifyDate.minus(1, ChronoUnit.HOURS);
-        task.setLastNotify(Date.from(earlierNotifyDate));
+        LocalDateTime earlierNotifyDate = LocalDateTime.now().minusHours(1);
+        task.setLastNotify(earlierNotifyDate);
 
         assertThat(recordService.isTimeToRecord(task))
                 .isTrue();

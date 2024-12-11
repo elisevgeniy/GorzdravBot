@@ -8,7 +8,7 @@ import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskDateLimitsConverter;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskTimeLimitsConverter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class TaskEntity {
     @Convert(converter = TaskDateLimitsConverter.class)
     private TaskDateLimits dateLimits;
 
-    private Date lastNotify;
+    private LocalDateTime lastNotify;
 
     private String recordedAppointmentId;
 
