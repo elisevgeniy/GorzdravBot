@@ -1,6 +1,7 @@
 package ru.kusok_piroga.gorzdravbot.recorder.utils;
 
 import lombok.experimental.UtilityClass;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
@@ -12,12 +13,13 @@ import java.time.format.DateTimeParseException;
 
 @UtilityClass
 public class ConstraintChecker {
-    public static boolean check(TaskEntity task, AvailableAppointment appointment){
+    public static boolean check(TaskEntity task, AvailableAppointment appointment) {
         return checkLimitConstraint(
                 appointment.visitStart(),
                 task.getTimeLimits(),
                 task.getDateLimits()
-        );
+        ) &&
+               checkIsNotSkipped(task, appointment);
     }
 
     private static boolean checkLimitConstraint(String visitStart, TaskTimeLimits timeLimits, TaskDateLimits dateLimits) {
@@ -31,5 +33,12 @@ public class ConstraintChecker {
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    private static boolean checkIsNotSkipped(TaskEntity task, AvailableAppointment appointment) {
+        SkipAppointmentEntity toCheck = new SkipAppointmentEntity();
+        toCheck.setTask(task);
+        toCheck.setAppointmentId(appointment.id());
+        return !task.getSkippedAppointments().contains(toCheck);
     }
 }

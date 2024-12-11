@@ -11,6 +11,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
+import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
@@ -40,9 +42,12 @@ class TaskServiceTest {
     TaskRepository taskRepository;
     @MockBean
     PatientService patientService;
+    @MockBean
+    private SkipAppointmentRepository skipAppointmentRepository;
 
     @Autowired
     TaskService taskService;
+
 
     @BeforeEach
     void setUp() {
@@ -54,6 +59,7 @@ class TaskServiceTest {
         patient.setBirthday(new Date());
 
         TaskEntity task = new TaskEntity();
+        task.setId(1L);
         task.setRecordedAppointmentId("testAppId");
         task.setPatientEntity(patient);
 
@@ -233,4 +239,16 @@ class TaskServiceTest {
         verify(taskRepository, times(0)).save(any(TaskEntity.class));
     }
 
+    @Test
+    void skipAppointment() {
+        taskService.skipAppointment(1L, "testAppointmentId");
+
+        ArgumentCaptor<SkipAppointmentEntity> argumentCaptor = ArgumentCaptor.forClass(SkipAppointmentEntity.class);
+        verify(skipAppointmentRepository, times(1)).save(argumentCaptor.capture());
+        SkipAppointmentEntity saved = argumentCaptor.getValue();
+
+        assertThat(saved.getAppointmentId()).isEqualTo("testAppointmentId");
+        assertThat(saved.getTask()).isNotNull();
+        assertThat(saved.getTask().getId()).isEqualTo(1L);
+    }
 }
