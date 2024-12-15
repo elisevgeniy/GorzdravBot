@@ -17,5 +17,11 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/changelogs/02-add-skip-appointments.sql
+  - changeSet:
+      id:  migrate-to-dates
+      author:  elisevgeniy
+      changes:
+        - sqlFile:
+            path: db/changelog/changelogs/03-migrate-to-dates.sql
 
 
