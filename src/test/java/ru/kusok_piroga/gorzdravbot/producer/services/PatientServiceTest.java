@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(classes = PatientService.class)
 class PatientServiceTest {
 
-    @MockBean
+    @MockitoBean
     PatientRepository patientRepository;
 
     @Autowired

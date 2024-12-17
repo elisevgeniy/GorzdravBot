@@ -3,7 +3,7 @@ package ru.kusok_piroga.gorzdravbot.recorder.services;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = ScheduleService.class)
 class ScheduleServiceTest {
 
-    @MockBean
+    @MockitoBean
     TaskRepository taskRepository;
-    @MockBean
+    @MockitoBean
     FetchService fetchService;
-    @MockBean
+    @MockitoBean
     NotifyService notifyService;
-    @MockBean
+    @MockitoBean
     RecordService recordService;
 
     @Autowired

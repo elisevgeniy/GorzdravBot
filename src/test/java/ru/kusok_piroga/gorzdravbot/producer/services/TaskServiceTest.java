@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
@@ -36,13 +36,13 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = TaskService.class)
 class TaskServiceTest {
 
-    @MockBean
+    @MockitoBean
     ApiService apiService;
-    @MockBean
+    @MockitoBean
     TaskRepository taskRepository;
-    @MockBean
+    @MockitoBean
     PatientService patientService;
-    @MockBean
+    @MockitoBean
     private SkipAppointmentRepository skipAppointmentRepository;
 
     @Autowired
