@@ -3,7 +3,7 @@ package ru.kusok_piroga.gorzdravbot.recorder.services;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.services.RawSendService;
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = RecordService.class)
 class RecordServiceTest {
 
-    @MockBean
+    @MockitoBean
     RawSendService sendService;
-    @MockBean
+    @MockitoBean
     TaskRepository taskRepository;
-    @MockBean
+    @MockitoBean
     ApiService api;
-    @MockBean
+    @MockitoBean
     CallbackEncoder callbackEncoder;
 
     @Autowired
