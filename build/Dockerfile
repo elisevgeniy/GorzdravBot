@@ -6,7 +6,7 @@ COPY ../src ./src
 RUN --mount=type=cache,target=/root/.m2 \
     mvn clean install
 
-FROM openjdk:17.0.2-slim-bullseye AS run
+FROM openjdk:21-jdk AS run
 
 WORKDIR /app
 
