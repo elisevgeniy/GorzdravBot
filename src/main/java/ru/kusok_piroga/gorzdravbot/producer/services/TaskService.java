@@ -223,4 +223,17 @@ public class TaskService {
 
         return true;
     }
+
+    public boolean restartTask(long taskId){
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) return false;
+
+        task.get().setLastNotify(null);
+        task.get().setRecordedAppointmentId(null);
+        task.get().setCompleted(false);
+
+        repository.save(task.get());
+
+        return true;
+    }
 }

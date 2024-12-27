@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
@@ -79,6 +80,14 @@ public class TaskListCommandService implements ICommandService {
         return new CompositeTelegramResponse(responses);
     }
 
+    private void addRestartCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Перезапустить",
+                callbackEncoder.encode(
+                        TaskCallbackUnit.FN_RESTART,
+                        new RestartTaskDto(task.getId())
+                ));
+    }
+
     private void addCancelCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put("Отменить номерок",
                 callbackEncoder.encode(
@@ -101,6 +110,7 @@ public class TaskListCommandService implements ICommandService {
             addCancelCallbackButton(task, buttons);
         }
         addDeleteCallbackButton(task, buttons);
+        addRestartCallbackButton(task, buttons);
         return formTaskCallbackButton(task, buttons);
     }
 
