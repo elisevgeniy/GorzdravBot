@@ -236,4 +236,8 @@ public class TaskService {
 
         return true;
     }
+
+    public boolean validateTaskIdByDialogId(Long taskId, Long dialogId){
+        return repository.validateTaskByDialog(taskId, dialogId);
+    }
 }
