@@ -14,11 +14,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
-import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
+import ru.kusok_piroga.gorzdravbot.domain.models.*;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
@@ -271,11 +269,37 @@ class TaskServiceTest {
     }
 
     @Test
-    void changeTime_fail_by_wrond_task() throws TimeLimitParseException {
+    void changeTime_fail_by_wrong_task() throws TimeLimitParseException {
         TaskTimeLimits timeLimits = new TaskTimeLimits("10:00-12:00");
         assertThat(taskService.changeTime(
                 999L,
                 timeLimits
+        )).isFalse();
+
+        verify(taskRepository, times(0)).save(any(TaskEntity.class));
+    }
+
+    @Test
+    void changeDate_valid_data() throws DateLimitParseException {
+        TaskDateLimits dateLimits = new TaskDateLimits("01.01.2999");
+        assertThat(taskService.changeDate(
+                1L,
+                dateLimits
+        )).isTrue();
+
+        ArgumentCaptor<TaskEntity> argumentCaptor = ArgumentCaptor.forClass(TaskEntity.class);
+        verify(taskRepository, times(1)).save(argumentCaptor.capture());
+        TaskEntity saved = argumentCaptor.getValue();
+
+        assertThat(saved.getDateLimits()).isEqualTo(dateLimits);
+    }
+
+    @Test
+    void changeDate_fail_by_wrong_task() throws DateLimitParseException {
+        TaskDateLimits dateLimits = new TaskDateLimits("01.01.2999");
+        assertThat(taskService.changeDate(
+                999L,
+                dateLimits
         )).isFalse();
 
         verify(taskRepository, times(0)).save(any(TaskEntity.class));

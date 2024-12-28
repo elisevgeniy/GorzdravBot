@@ -250,6 +250,19 @@ public class TaskService {
         return true;
     }
 
+    public boolean changeDate(long taskId, TaskDateLimits dateLimits) {
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) {
+            log.warn("Change date fail. Task id = {} not found", taskId);
+            return false;
+        }
+
+        task.get().setDateLimits(dateLimits);
+
+        repository.save(task.get());
+        return true;
+    }
+
     public boolean validateTaskIdByDialogId(Long taskId, Long dialogId){
         return repository.validateTaskByDialog(taskId, dialogId);
     }

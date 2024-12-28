@@ -8,9 +8,12 @@ import io.github.drednote.telegram.core.request.UpdateRequest;
 import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import ru.kusok_piroga.gorzdravbot.bot.exceptions.WrongParamException;
+import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskChangeDateDto;
 import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskChangeTimeDto;
 import ru.kusok_piroga.gorzdravbot.bot.services.*;
+import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
 
 import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
@@ -68,6 +71,7 @@ public class CommandController {
             throw new WrongParamException();
         }
     }
+
     @TelegramRequest(COMMAND_CHANGE_TASK + "/{taskId}/time")
     public TelegramResponse onChangeTaskTimeEmpty(@TelegramPatternVariable("taskId") String taskIdStr, UpdateRequest request) {
         if (taskIdStr.isEmpty() || taskIdStr.isBlank()){
@@ -81,6 +85,24 @@ public class CommandController {
                     new TaskTimeLimits("")
             ));
         } catch (TimeLimitParseException | NumberFormatException e) {
+            throw new WrongParamException();
+        }
+    }
+
+    @TelegramRequest(COMMAND_CHANGE_TASK + "/{taskId}/date {value}")
+    public TelegramResponse onChangeTaskDate(@TelegramPatternVariable("taskId") String taskIdStr, @TelegramPatternVariable("value") String newDateLimitsStr, UpdateRequest request) {
+        if (taskIdStr.isEmpty() || taskIdStr.isBlank() ||
+            newDateLimitsStr.isEmpty() || newDateLimitsStr.isBlank()){
+            throw new WrongParamException();
+        }
+
+        try {
+            return taskChangeCommandService.changeDate(new TaskChangeDateDto(
+                    request.getChatId(),
+                    Long.parseLong(taskIdStr),
+                    new TaskDateLimits(newDateLimitsStr)
+            ));
+        } catch (NumberFormatException | DateLimitParseException e) {
             throw new WrongParamException();
         }
     }
