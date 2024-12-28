@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
@@ -104,6 +105,14 @@ public class TaskListCommandService implements ICommandService {
                 ));
     }
 
+    private void addChangeCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Изменить",
+                callbackEncoder.encode(
+                        TaskCallbackUnit.FN_CHANGE,
+                        new ChangeTaskDto(task.getId())
+                ));
+    }
+
     private TelegramResponse prepareCompletedTaskMessage(TaskEntity task){
         Map<String, String> buttons = new TreeMap<>();
         if (task.getRecordedAppointmentId() != null) {
@@ -111,12 +120,14 @@ public class TaskListCommandService implements ICommandService {
         }
         addDeleteCallbackButton(task, buttons);
         addRestartCallbackButton(task, buttons);
+        addChangeCallbackButton(task, buttons);
         return formTaskCallbackButton(task, buttons);
     }
 
     private TelegramResponse prepareUncompletedTaskMessage(TaskEntity task){
         Map<String, String> buttons = new HashMap<>();
         addDeleteCallbackButton(task, buttons);
+        addChangeCallbackButton(task, buttons);
         return formTaskCallbackButton(task, buttons);
     }
 
