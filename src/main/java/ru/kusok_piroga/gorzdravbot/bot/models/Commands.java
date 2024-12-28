@@ -10,4 +10,5 @@ public class Commands {
     public static final String COMMAND_ADD_TASK = "/addtask";
     public static final String COMMAND_LIST_TASK = "/listtask";
     public static final String COMMAND_DELETE_TASK = "/deletetask";
+    public static final String COMMAND_CHANGE_TASK = "/changetask";
 }

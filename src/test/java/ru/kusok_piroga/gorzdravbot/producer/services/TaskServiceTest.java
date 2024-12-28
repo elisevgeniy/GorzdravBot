@@ -14,9 +14,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskState;
+import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.CancelAppointmentException;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
@@ -60,6 +62,7 @@ class TaskServiceTest {
 
         TaskEntity task = new TaskEntity();
         task.setId(1L);
+        task.setDialogId(10L);
         task.setRecordedAppointmentId("testAppId");
         task.setPatientEntity(patient);
 
@@ -250,5 +253,31 @@ class TaskServiceTest {
         assertThat(saved.getAppointmentId()).isEqualTo("testAppointmentId");
         assertThat(saved.getTask()).isNotNull();
         assertThat(saved.getTask().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void changeTime_valid_data() throws TimeLimitParseException {
+        TaskTimeLimits timeLimits = new TaskTimeLimits("10:00-12:00");
+        assertThat(taskService.changeTime(
+                1L,
+                timeLimits
+        )).isTrue();
+
+        ArgumentCaptor<TaskEntity> argumentCaptor = ArgumentCaptor.forClass(TaskEntity.class);
+        verify(taskRepository, times(1)).save(argumentCaptor.capture());
+        TaskEntity saved = argumentCaptor.getValue();
+
+        assertThat(saved.getTimeLimits()).isEqualTo(timeLimits);
+    }
+
+    @Test
+    void changeTime_fail_by_wrond_task() throws TimeLimitParseException {
+        TaskTimeLimits timeLimits = new TaskTimeLimits("10:00-12:00");
+        assertThat(taskService.changeTime(
+                999L,
+                timeLimits
+        )).isFalse();
+
+        verify(taskRepository, times(0)).save(any(TaskEntity.class));
     }
 }
