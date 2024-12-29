@@ -45,4 +45,7 @@ import java.util.Optional;
     @Query("delete from TaskEntity t where t.dialogId = ?1 and not t.state = ?2 ")
     // todo: add limit 1 for PostgreSQL
     void deleteByDialogIdAndStateIsNot(Long dialogId, TaskState state);
+
+    @Query("select count(t.id) > 0 from TaskEntity t where t.dialogId = ?2 and t.id = ?1")
+    boolean validateTaskByDialog(Long taskId, Long dialogId);
 }

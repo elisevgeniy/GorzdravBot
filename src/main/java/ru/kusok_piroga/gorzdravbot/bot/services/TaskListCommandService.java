@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.CopyTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
@@ -104,24 +106,51 @@ public class TaskListCommandService implements ICommandService {
                 ));
     }
 
+    private void addChangeCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Изменить",
+                callbackEncoder.encode(
+                        TaskCallbackUnit.FN_CHANGE,
+                        new ChangeTaskDto(task.getId())
+                ));
+    }
+
+    private void addCopyCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put("Копировать",
+                callbackEncoder.encode(
+                        TaskCallbackUnit.FN_COPY,
+                        new CopyTaskDto(task.getId())
+                ));
+    }
+
     private TelegramResponse prepareCompletedTaskMessage(TaskEntity task){
-        Map<String, String> buttons = new TreeMap<>();
+        List<Map<String, String>> buttons = new ArrayList<>();
+        buttons.add(new LinkedHashMap<>());
+        buttons.add(new LinkedHashMap<>());
+        buttons.add(new LinkedHashMap<>());
+
+        addChangeCallbackButton(task, buttons.get(0));
+        addCopyCallbackButton(task, buttons.get(0));
+        addRestartCallbackButton(task, buttons.get(1));
+        addDeleteCallbackButton(task, buttons.get(1));
         if (task.getRecordedAppointmentId() != null) {
-            addCancelCallbackButton(task, buttons);
+            addCancelCallbackButton(task, buttons.get(2));
         }
-        addDeleteCallbackButton(task, buttons);
-        addRestartCallbackButton(task, buttons);
+
         return formTaskCallbackButton(task, buttons);
     }
 
     private TelegramResponse prepareUncompletedTaskMessage(TaskEntity task){
-        Map<String, String> buttons = new HashMap<>();
-        addDeleteCallbackButton(task, buttons);
+        List<Map<String, String>> buttons = new ArrayList<>();
+        buttons.add(new LinkedHashMap<>());
+        buttons.add(new LinkedHashMap<>());
+        addChangeCallbackButton(task, buttons.get(0));
+        addCopyCallbackButton(task, buttons.get(0));
+        addDeleteCallbackButton(task, buttons.get(1));
         return formTaskCallbackButton(task, buttons);
     }
 
     @NotNull
-    private InlineButtonTelegramResponse formTaskCallbackButton(TaskEntity task, Map<String, String> buttons) {
+    private InlineButtonTelegramResponse formTaskCallbackButton(TaskEntity task, List<Map<String, String>> buttons) {
 
         DateTimeFormatter formater = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -148,7 +177,7 @@ public class TaskListCommandService implements ICommandService {
                                         .map(SkipAppointmentEntity::getAppointmentId)
                                         .toList().toString()
                 ),
-                List.of(buttons)
+                buttons
         );
     }
 }

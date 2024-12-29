@@ -29,8 +29,8 @@ public class CallbackChainController {
         lastUnit.setNext(new FinalCallbackUnit());
     }
 
-    public TelegramResponse run(CallbackData data) {
+    public TelegramResponse run(Long dialogId, CallbackData data) {
         if (firstUnit == null) throw new RuntimeException("No chain units was created");
-        return firstUnit.execute(data);
+        return firstUnit.execute(dialogId, data);
     }
 }

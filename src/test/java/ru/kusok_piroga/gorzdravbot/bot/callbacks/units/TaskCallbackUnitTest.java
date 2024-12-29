@@ -11,6 +11,7 @@ import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskCancelCommandService;
+import ru.kusok_piroga.gorzdravbot.bot.services.TaskCreateCommandService;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteCommandService;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskRestartCommandService;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
@@ -40,6 +41,9 @@ class TaskCallbackUnitTest {
     TaskDeleteCommandService taskDeleteCommandService;
     @MockitoBean
     TaskCancelCommandService taskCancelCommandService;
+    @MockitoBean
+    TaskCreateCommandService taskCreateCommandService;
+
     @Autowired
     TaskRestartCommandService taskRestartCommandService;
 
@@ -55,6 +59,7 @@ class TaskCallbackUnitTest {
     @BeforeEach
     void before(){
         TaskEntity task = new TaskEntity();
+        task.setDialogId(999L);
         task.setId(1L);
         task.setCompleted(true);
         task.setRecordedAppointmentId("appId");
@@ -77,7 +82,7 @@ class TaskCallbackUnitTest {
                 new RestartTaskDto(1L).toString()
                 );
 
-        TelegramResponse response = taskCallbackUnit.execute(data);
+        TelegramResponse response = taskCallbackUnit.execute(999L, data);
         assertThat(response.toString())
                 .containsIgnoringCase("успешно перезапущено")
                         .doesNotContainIgnoringCase("Номерок не отменён");

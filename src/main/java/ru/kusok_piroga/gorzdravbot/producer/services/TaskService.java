@@ -62,7 +62,7 @@ public class TaskService {
     /**
      * @param taskId task id
      * @return Canceled appointment id
-     * @throws NoSuchElementException if task not found
+     * @throws NoSuchElementException     if task not found
      * @throws CancelAppointmentException if cancel failed
      */
     public String cancelAppointmentByTask(Long taskId) throws NoSuchElementException, CancelAppointmentException {
@@ -106,7 +106,7 @@ public class TaskService {
         return filler.fill(task, value);
     }
 
-    public TaskEntity getUnsetupedTaskByDialog(Long dialogId){
+    public TaskEntity getUnsetupedTaskByDialog(Long dialogId) {
         return repository.findFirstByDialogIdAndStateIsNot(dialogId, TaskState.SETUPED).orElseThrow();
     }
 
@@ -204,12 +204,12 @@ public class TaskService {
                 task.setState(SETUPED);
                 return repository.save(task);
             } catch (DateLimitParseException e) {
-                throw  new DateFormatException();
+                throw new DateFormatException();
             }
         }
     }
 
-    public boolean skipAppointment(Long taskId, String appointmentId){
+    public boolean skipAppointment(Long taskId, String appointmentId) {
 
         Optional<TaskEntity> task = repository.findById(taskId);
 
@@ -224,7 +224,7 @@ public class TaskService {
         return true;
     }
 
-    public boolean restartTask(long taskId){
+    public boolean restartTask(long taskId) {
         Optional<TaskEntity> task = repository.findById(taskId);
         if (task.isEmpty()) return false;
 
@@ -234,6 +234,60 @@ public class TaskService {
 
         repository.save(task.get());
 
+        return true;
+    }
+
+    public boolean changeTime(long taskId, TaskTimeLimits timeLimits) {
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) {
+            log.warn("Change time fail. Task id = {} not found", taskId);
+            return false;
+        }
+
+        task.get().setTimeLimits(timeLimits);
+
+        repository.save(task.get());
+        return true;
+    }
+
+    public boolean changeDate(long taskId, TaskDateLimits dateLimits) {
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) {
+            log.warn("Change date fail. Task id = {} not found", taskId);
+            return false;
+        }
+
+        task.get().setDateLimits(dateLimits);
+
+        repository.save(task.get());
+        return true;
+    }
+
+    public boolean validateTaskIdByDialogId(Long taskId, Long dialogId){
+        return repository.validateTaskByDialog(taskId, dialogId);
+    }
+
+    public boolean copyTask(Long taskId){
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) {
+            log.warn("Copy task fail. Task id = {} not found", taskId);
+            return false;
+        }
+
+        TaskEntity newTask = new TaskEntity();
+        TaskEntity sourceTask = task.get();
+
+        newTask.setDialogId(sourceTask.getDialogId());
+        newTask.setDistrictId(sourceTask.getDistrictId());
+        newTask.setPolyclinicId(sourceTask.getPolyclinicId());
+        newTask.setSpecialityId(sourceTask.getSpecialityId());
+        newTask.setDoctorId(sourceTask.getDoctorId());
+        newTask.setPatientEntity(sourceTask.getPatientEntity());
+        newTask.setTimeLimits(sourceTask.getTimeLimits());
+        newTask.setDateLimits(sourceTask.getDateLimits());
+        newTask.setState(SETUPED);
+
+        repository.save(newTask);
         return true;
     }
 }

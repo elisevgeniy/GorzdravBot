@@ -12,7 +12,9 @@ import ru.kusok_piroga.gorzdravbot.api.models.Doctor;
 import ru.kusok_piroga.gorzdravbot.api.models.Polyclinic;
 import ru.kusok_piroga.gorzdravbot.api.models.Specialty;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
+import ru.kusok_piroga.gorzdravbot.bot.exceptions.AccessDeniedException;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
+import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskCopyDto;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
@@ -169,5 +171,16 @@ public class TaskCreateCommandService implements ICommandService {
                 или диапазон дат, в котором искать и НЕ номерки в формате
                 дд.мм.гггг - дд.мм.гггг, дд.мм.гггг - дд.мм.гггг !дд.мм.гггг - дд.мм.гггг, дд.мм.гггг - дд.мм.гггг""";
         return new GenericTelegramResponse(answerText);
+    }
+
+    public boolean copyTask(TaskCopyDto taskCopyDto) {
+        if (!taskService.validateTaskIdByDialogId(
+                taskCopyDto.taskId(),
+                taskCopyDto.dialogId()
+        )) {
+            throw new AccessDeniedException();
+        }
+
+        return taskService.copyTask(taskCopyDto.taskId());
     }
 }
