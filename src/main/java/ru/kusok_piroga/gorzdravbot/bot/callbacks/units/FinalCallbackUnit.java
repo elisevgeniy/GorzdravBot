@@ -7,7 +7,7 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 public class FinalCallbackUnit extends BaseCallbackUnit {
 
     @Override
-    public TelegramResponse execute(CallbackData data) {
+    public TelegramResponse execute(Long dialogId, CallbackData data) {
         throw new UnknownCallbackFunctionException();
     }
 }

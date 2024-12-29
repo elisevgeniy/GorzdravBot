@@ -7,11 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.CopyTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
+import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskCopyDto;
 import ru.kusok_piroga.gorzdravbot.bot.responses.DeleteMessageTelegramResponse;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskCancelCommandService;
+import ru.kusok_piroga.gorzdravbot.bot.services.TaskCreateCommandService;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteCommandService;
 import ru.kusok_piroga.gorzdravbot.bot.services.TaskRestartCommandService;
 
@@ -25,16 +28,18 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
     private final TaskDeleteCommandService taskDeleteCommandService;
     private final TaskCancelCommandService taskCancelCommandService;
     private final TaskRestartCommandService taskRestartCommandService;
+    private final TaskCreateCommandService taskCreateCommandService;
 
     public static final String FN_DELETE = "tsk_del";
     public static final String FN_RESTART = "tsk_up";
     public static final String FN_CANCEL = "tsk_cnl";
     public static final String FN_CHANGE = "tsk_cng";
+    public static final String FN_COPY = "tsk_cp";
 
     @Override
-    public TelegramResponse execute(CallbackData data) {
+    public TelegramResponse execute(Long dialogId, CallbackData data) {
         if (!checkAffiliation(data.fn())){
-            return getNext().execute(data);
+            return getNext().execute(dialogId, data);
         }
 
         switch (data.fn()){
@@ -84,6 +89,21 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
                         ));
                 response.setParseMode(UpdateHandlerProperties.ParseMode.MARKDOWN);
                 return response;
+            case FN_COPY:
+                Optional<CopyTaskDto> copyTaskDto = CopyTaskDto.parse(data.d());
+                if (copyTaskDto.isEmpty()) {
+                    log.error("Callback wrong format");
+                    return new GenericTelegramResponse("Ошибка значения callback");
+                }
+
+                if (taskCreateCommandService.copyTask(new TaskCopyDto(
+                        dialogId,
+                        copyTaskDto.get().taskId()
+                ))){
+                    return new GenericTelegramResponse("Задание скопировано");
+                } else {
+                    return new GenericTelegramResponse("Задание не скопировано!");
+                }
             default:
                 return new GenericTelegramResponse("Ошибка значения callback");
         }
@@ -91,7 +111,7 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
 
     private boolean checkAffiliation(String function){
         return switch (function) {
-            case FN_DELETE, FN_RESTART, FN_CANCEL, FN_CHANGE -> true;
+            case FN_DELETE, FN_RESTART, FN_CANCEL, FN_CHANGE, FN_COPY -> true;
             default -> false;
         };
     }

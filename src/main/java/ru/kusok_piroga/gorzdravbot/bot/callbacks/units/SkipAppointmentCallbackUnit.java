@@ -23,9 +23,9 @@ public class SkipAppointmentCallbackUnit extends BaseCallbackUnit {
     public static final String FN_SKIP = "skip_appntmt";
 
     @Override
-    public TelegramResponse execute(CallbackData data) {
+    public TelegramResponse execute(Long dialogId, CallbackData data) {
         if (!checkAffiliation(data.fn())) {
-            return getNext().execute(data);
+            return getNext().execute(dialogId, data);
         }
 
         log.info("Callback, fn = {}, data = {}", data.fn(), data.d());

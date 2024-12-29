@@ -7,5 +7,5 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 public interface ICallbackChainUnit {
     void setNext(ICallbackChainUnit unit);
     ICallbackChainUnit getNext();
-    TelegramResponse execute(CallbackData data);
+    TelegramResponse execute(Long dialogId, CallbackData data);
 }

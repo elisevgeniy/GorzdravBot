@@ -266,4 +266,28 @@ public class TaskService {
     public boolean validateTaskIdByDialogId(Long taskId, Long dialogId){
         return repository.validateTaskByDialog(taskId, dialogId);
     }
+
+    public boolean copyTask(Long taskId){
+        Optional<TaskEntity> task = repository.findById(taskId);
+        if (task.isEmpty()) {
+            log.warn("Copy task fail. Task id = {} not found", taskId);
+            return false;
+        }
+
+        TaskEntity newTask = new TaskEntity();
+        TaskEntity sourceTask = task.get();
+
+        newTask.setDialogId(sourceTask.getDialogId());
+        newTask.setDistrictId(sourceTask.getDistrictId());
+        newTask.setPolyclinicId(sourceTask.getPolyclinicId());
+        newTask.setSpecialityId(sourceTask.getSpecialityId());
+        newTask.setDoctorId(sourceTask.getDoctorId());
+        newTask.setPatientEntity(sourceTask.getPatientEntity());
+        newTask.setTimeLimits(sourceTask.getTimeLimits());
+        newTask.setDateLimits(sourceTask.getDateLimits());
+        newTask.setState(SETUPED);
+
+        repository.save(newTask);
+        return true;
+    }
 }

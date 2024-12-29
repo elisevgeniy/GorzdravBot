@@ -29,7 +29,7 @@ public class CallbackController {
             return massageController.onAnyMessage(request);
         }
 
-        return callbackChainController.run(callbackData.get());
+        return callbackChainController.run(request.getChatId(), callbackData.get());
 
     }
 }
