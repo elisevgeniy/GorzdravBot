@@ -14,6 +14,9 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       BOT_NAME: ${BOT_NAME}
       BOT_TOKEN: ${BOT_TOKEN}
+      LOKI_URL: ${LOKI_URL}
+      LOKI_AUTH: ${LOKI_AUTH}
+      LOKI_PASSWORD: ${LOKI_PASSWORD}
 
   database:
     image: postgres:latest
