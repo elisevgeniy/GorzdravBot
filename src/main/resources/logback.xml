@@ -1,0 +1,38 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) - [%thread] %highlight(%logger{36}): %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <if condition='!"${LOKI_URL}".isEmpty()'>
+        <then>
+            <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+                <http>
+                    <url>${LOKI_URL}/loki/api/v1/push</url>
+                    <auth>
+                        <username>${LOKI_AUTH}</username>
+                        <password>${LOKI_PASSWORD}</password>
+                    </auth>
+                </http>
+                <format>
+                    <label>
+                        <pattern>app=${BOT_NAME},level=%level</pattern>
+                    </label>
+                    <message class="com.github.loki4j.logback.JsonLayout">
+                        <loggerName>
+                            <fieldName>class</fieldName>
+                        </loggerName>
+                    </message>
+                </format>
+            </appender>
+            <root level="INFO">
+                <appender-ref ref="LOKI"/>
+            </root>
+        </then>
+    </if>
+</configuration>
