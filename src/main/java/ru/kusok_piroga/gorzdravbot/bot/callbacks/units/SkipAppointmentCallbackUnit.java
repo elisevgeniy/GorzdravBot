@@ -5,9 +5,9 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.SkipAppointmentDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 
 import java.util.Optional;

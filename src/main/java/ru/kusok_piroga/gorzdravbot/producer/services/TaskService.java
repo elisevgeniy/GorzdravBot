@@ -3,12 +3,11 @@ package ru.kusok_piroga.gorzdravbot.producer.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.models.*;
+import ru.kusok_piroga.gorzdravbot.domain.repositories.SkipAppointmentRepository;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 
