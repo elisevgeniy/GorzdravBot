@@ -28,6 +28,9 @@ public class ScheduleService {
         log.info("Scheduled execution start");
 
         List<TaskEntity> tasks = taskRepository.findAllUncompletedTasks();
+
+        log.info("Uncompleted tasks id list: {}", tasks.stream().mapToLong(TaskEntity::getId).toArray());
+
         tasks.stream().parallel()
                 .filter(PassTimeChecker::check)
                 .forEach(this::taskProcess);

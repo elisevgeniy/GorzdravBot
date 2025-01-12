@@ -23,7 +23,7 @@ class TaskDateLimitsTest {
                         "10.10.2050",
                         List.of(
                                 List.of(
-                                        LocalDate.now().minusDays(1),
+                                        LocalDate.parse("01.01.2000", formatter),
                                         LocalDate.parse("10.10.2050", formatter)
                                 )
                         ),

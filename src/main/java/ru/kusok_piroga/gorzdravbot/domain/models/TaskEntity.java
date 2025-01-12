@@ -52,4 +52,19 @@ public class TaskEntity {
 
     @OneToMany(mappedBy = "task", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<SkipAppointmentEntity> skippedAppointments = new LinkedHashSet<>();
+
+    @Override
+    public String toString() {
+        return new StringBuffer()
+                .append("id=").append(id).append(", ")
+                .append("completed=").append(completed).append(", ")
+                .append("dialogId=").append(dialogId).append(", ")
+                .append("dateLimits=").append(dateLimits).append(", ")
+                .append("timeLimits=").append(timeLimits).append(", ")
+                .append("lastNotify=").append(lastNotify).append(", ")
+                .append("recordedAppointmentId=").append(recordedAppointmentId).append(", ")
+                .append("patientEntity id=").append(patientEntity.getId()).append(", ")
+                .append("patientEntity id=").append(patientEntity.getId()).append(", ")
+                .toString();
+    }
 }
