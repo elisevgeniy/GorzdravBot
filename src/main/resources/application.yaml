@@ -33,3 +33,17 @@ drednote:
         start:
           text: Запустить бота
           command: start
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+
+security:
+  auth:
+    username: ${AUTH_USERNAME}
+    password: ${AUTH_PASSWORD}

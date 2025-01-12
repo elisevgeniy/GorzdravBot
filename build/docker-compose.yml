@@ -17,6 +17,10 @@ services:
       LOKI_URL: ${LOKI_URL}
       LOKI_AUTH: ${LOKI_AUTH}
       LOKI_PASSWORD: ${LOKI_PASSWORD}
+      AUTH_USERNAME: ${AUTH_USERNAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+    ports:
+      - "8080:8080"
 
   database:
     image: postgres:latest
