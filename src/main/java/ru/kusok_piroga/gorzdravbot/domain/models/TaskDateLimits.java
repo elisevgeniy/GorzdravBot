@@ -14,6 +14,8 @@ import java.util.List;
 @Setter
 @Getter
 public class TaskDateLimits implements Serializable {
+    private static final LocalDate defaultLowLimit = LocalDate.parse("2000-01-01");
+
     private List<List<LocalDate>> includedLimits = new ArrayList<>();
     private List<List<LocalDate>> excludedLimits = new ArrayList<>();
 
@@ -23,7 +25,7 @@ public class TaskDateLimits implements Serializable {
     public TaskDateLimits(String rawLimitString) throws DateLimitParseException {
         if (rawLimitString.trim().length() == 10) {
             includedLimits.add(List.of(
-                    LocalDate.now().minusDays(1),
+                    defaultLowLimit,
                     this.parseDate(rawLimitString)
             ));
         } else {
@@ -87,7 +89,7 @@ public class TaskDateLimits implements Serializable {
         if (range.size() == 1 ||
             !range.get(0).isBefore(range.get(1)) &&
             !range.get(0).equals(range.get(1))) {
-            throw new DateLimitParseException("validate error. Val 1 = %s, val 2 = %s".formatted(
+            throw new DateLimitParseException("validate error. Lower limit = %s, high limit = %s".formatted(
                     range.get(0).toString(),
                     (range.size() == 1) ? null : range.get(1).toString()));
         }

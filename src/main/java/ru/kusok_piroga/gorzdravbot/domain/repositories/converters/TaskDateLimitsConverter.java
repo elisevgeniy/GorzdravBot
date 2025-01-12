@@ -2,10 +2,12 @@ package ru.kusok_piroga.gorzdravbot.domain.repositories.converters;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.extern.slf4j.Slf4j;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 
 @Converter
+@Slf4j
 public class TaskDateLimitsConverter implements AttributeConverter<TaskDateLimits, String> {
 
     @Override
@@ -18,6 +20,7 @@ public class TaskDateLimitsConverter implements AttributeConverter<TaskDateLimit
         try {
             return new TaskDateLimits(dbData);
         } catch (DateLimitParseException e) {
+            log.error(e.toString());
             return null;
         }
     }
