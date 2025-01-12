@@ -4,7 +4,6 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskDateLimitsConverter;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskTimeLimitsConverter;
 

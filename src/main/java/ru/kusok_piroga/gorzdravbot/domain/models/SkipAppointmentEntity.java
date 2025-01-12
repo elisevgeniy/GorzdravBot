@@ -1,11 +1,10 @@
-package ru.kusok_piroga.gorzdravbot;
+package ru.kusok_piroga.gorzdravbot.domain.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 
 @Getter
 @Setter

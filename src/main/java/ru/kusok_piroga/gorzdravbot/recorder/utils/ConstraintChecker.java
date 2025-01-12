@@ -1,8 +1,8 @@
 package ru.kusok_piroga.gorzdravbot.recorder.utils;
 
 import lombok.experimental.UtilityClass;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
+import ru.kusok_piroga.gorzdravbot.domain.models.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;

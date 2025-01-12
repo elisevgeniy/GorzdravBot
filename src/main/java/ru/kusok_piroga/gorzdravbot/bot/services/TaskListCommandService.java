@@ -7,7 +7,6 @@ import io.github.drednote.telegram.response.TelegramResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.CopyTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
@@ -15,6 +14,7 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
 import ru.kusok_piroga.gorzdravbot.bot.exceptions.EmptyTaskListException;
 import ru.kusok_piroga.gorzdravbot.bot.responses.InlineButtonTelegramResponse;
+import ru.kusok_piroga.gorzdravbot.domain.models.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.producer.services.TaskService;
 

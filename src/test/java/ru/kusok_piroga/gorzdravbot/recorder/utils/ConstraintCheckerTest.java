@@ -1,10 +1,10 @@
 package ru.kusok_piroga.gorzdravbot.recorder.utils;
 
 import org.junit.jupiter.api.Test;
-import ru.kusok_piroga.gorzdravbot.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
+import ru.kusok_piroga.gorzdravbot.domain.models.SkipAppointmentEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskTimeLimits;
