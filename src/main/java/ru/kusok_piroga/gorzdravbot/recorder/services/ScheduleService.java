@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
+import ru.kusok_piroga.gorzdravbot.recorder.utils.PassTimeChecker;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +28,9 @@ public class ScheduleService {
         log.info("Scheduled execution start");
 
         List<TaskEntity> tasks = taskRepository.findAllUncompletedTasks();
-        tasks.stream().parallel().forEach(this::taskProcess);
+        tasks.stream().parallel()
+                .filter(PassTimeChecker::check)
+                .forEach(this::taskProcess);
 
         log.info("Scheduled execution finish");
     }
