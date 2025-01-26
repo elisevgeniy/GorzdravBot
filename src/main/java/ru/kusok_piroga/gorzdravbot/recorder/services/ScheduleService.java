@@ -17,9 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final TaskRepository taskRepository;
-    private final FetchService fetchService;
-    private final NotifyService notifyService;
-    private final RecordService recordService;
     private final ScheduleTaskService scheduleTaskService;
 
     @Async
