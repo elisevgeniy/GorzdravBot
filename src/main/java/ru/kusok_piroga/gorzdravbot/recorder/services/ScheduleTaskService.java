@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class ScheduleTaskService {
     private final FetchService fetchService;
     private final NotifyService notifyService;
     private final RecordService recordService;
-    private final ClientHttpRequestFactorySettings clientHttpRequestFactorySettings;
 
     @Transactional
     public void taskProcess(@NonNull long taskId) {
