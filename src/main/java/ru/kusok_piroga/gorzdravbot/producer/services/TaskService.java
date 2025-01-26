@@ -49,6 +49,7 @@ public class TaskService {
         return repository.findAllUncompletedTasksByDialogId(chatId);
     }
 
+    @Transactional
     public void deleteTask(String taskIdStr) throws WrongIdException {
         try {
             deleteTask(Long.parseLong(taskIdStr));
