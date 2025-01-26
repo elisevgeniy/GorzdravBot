@@ -70,6 +70,7 @@ class TaskCallbackUnitTest {
         task.setPatientEntity(patient);
 
         doReturn(Optional.of(task)).when(repository).findById(1L);
+        doReturn(Optional.of(task)).when(repository).findTaskByIdWithLock(1L);
         doReturn(task).when(repository).save(task);
 
         doReturn(true).when(api).cancelAppointment(any(),any(),any());

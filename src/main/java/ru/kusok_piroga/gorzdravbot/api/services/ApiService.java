@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.kusok_piroga.gorzdravbot.api.models.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -39,6 +40,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(DistrictsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -55,6 +58,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(PolyclinicsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -71,6 +76,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(PolyclinicsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -87,6 +94,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(SpecialtiesResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -103,6 +112,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(DoctorsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -119,6 +130,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(TimetablesResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -135,6 +148,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AvailableAppointmentsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -160,6 +175,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(FindPatientResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -179,6 +196,8 @@ public class ApiService {
                 .body(Mono.just(body), AppointmentActionRequestBody.class)
                 .retrieve()
                 .bodyToMono(BaseResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -198,6 +217,8 @@ public class ApiService {
                 .body(Mono.just(body), AppointmentActionRequestBody.class)
                 .retrieve()
                 .bodyToMono(CancelAppointmentResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){
@@ -214,6 +235,8 @@ public class ApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(FutureAppointmentsResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
                 .block();
 
         if (response != null && response.isSuccess()){

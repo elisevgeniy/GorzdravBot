@@ -1,7 +1,12 @@
 package ru.kusok_piroga.gorzdravbot.domain.repositories;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
+import lombok.NonNull;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +18,12 @@ import java.util.Optional;
 
 @Repository
 public interface PatientRepository extends CrudRepository<PatientEntity, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "1000")})
+    @Query("select p from PatientEntity p where p.id = ?1")
+    Optional<PatientEntity> findByIdWithLock(@NonNull Long id);
+
     @Query("select p from PatientEntity p where p.dialogId = ?1 and p.state <> ?2")
     Optional<PatientEntity> findByDialogIdAndStateNot(Long dialogId, PatientState state);
 

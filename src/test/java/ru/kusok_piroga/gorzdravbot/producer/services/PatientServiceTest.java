@@ -1,5 +1,6 @@
 package ru.kusok_piroga.gorzdravbot.producer.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,13 +14,14 @@ import ru.kusok_piroga.gorzdravbot.domain.models.PatientState;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.PatientRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.DateFormatException;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = PatientService.class)
 class PatientServiceTest {
@@ -29,6 +31,19 @@ class PatientServiceTest {
 
     @Autowired
     PatientService patientService;
+
+    @BeforeEach
+    void setUp() {
+        PatientEntity patient = new PatientEntity();
+        patient.setId(1L);
+        patient.setFirstName("fn");
+        patient.setSecondName("sn");
+        patient.setMiddleName("mn");
+        patient.setBirthday(LocalDate.now());
+
+        doReturn(Optional.of(patient)).when(patientRepository).findById(1L);
+        doReturn(Optional.of(patient)).when(patientRepository).findByIdWithLock(1L);
+    }
 
     @Test
     void createPatient() {
@@ -53,10 +68,10 @@ class PatientServiceTest {
     @ParameterizedTest
     @MethodSource("getPatientStates")
     void fillPatientFields_change_state(PatientState init, PatientState target, String value) throws DateFormatException {
-        PatientEntity patient = new PatientEntity();
+        PatientEntity patient = patientRepository.findById(1L).orElseThrow();
         patient.setState(init);
 
-        patientService.fillPatientFields(patient, value);
+        patientService.fillPatientFields(patient.getId(), value);
 
         ArgumentCaptor<PatientEntity> patientCapture = ArgumentCaptor.forClass(PatientEntity.class);
         verify(patientRepository).save(patientCapture.capture());
@@ -67,10 +82,10 @@ class PatientServiceTest {
 
     @Test
     void fillPatientFields_fail_by_date() {
-        PatientEntity patient = new PatientEntity();
+        PatientEntity patient = patientRepository.findById(1L).orElseThrow();
         patient.setState(PatientState.SET_BIRTHDAY);
 
-        assertThatThrownBy(()->patientService.fillPatientFields(patient, "122345"))
+        assertThatThrownBy(()->patientService.fillPatientFields(patient.getId(), "122345"))
                 .isInstanceOf(DateFormatException.class);
 
         verify(patientRepository, times(0)).save(any());

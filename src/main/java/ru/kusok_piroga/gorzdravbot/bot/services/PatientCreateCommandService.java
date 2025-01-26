@@ -44,7 +44,7 @@ public class PatientCreateCommandService implements ICommandService {
 
         PatientEntity patient = null;
         try {
-            patient = service.fillPatientFields(patientOpt.get(), request.getText());
+            patient = service.fillPatientFields(patientOpt.get().getId(), request.getText());
         } catch (DateFormatException e) {
             throw new ru.kusok_piroga.gorzdravbot.bot.exceptions.DateFormatException();
         }
