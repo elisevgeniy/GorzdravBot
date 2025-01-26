@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @Repository
     public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
+
     Optional<TaskEntity> findFirstByDialogIdAndStateIsNot(@NonNull Long id, @NonNull TaskState state);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

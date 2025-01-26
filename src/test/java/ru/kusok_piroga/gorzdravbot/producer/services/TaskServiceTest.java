@@ -64,6 +64,7 @@ class TaskServiceTest {
         task.setPatientEntity(patient);
 
         doReturn(Optional.of(task)).when(taskRepository).findById(1L);
+        doReturn(Optional.of(task)).when(taskRepository).findTaskByIdWithLock(1L);
         doReturn(Optional.of(patient)).when(patientService).getPatientById(1L);
         doReturn(task).when(taskRepository).save(task);
     }

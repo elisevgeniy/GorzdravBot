@@ -1,7 +1,9 @@
 package ru.kusok_piroga.gorzdravbot.producer.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
@@ -37,7 +39,10 @@ public class PatientService {
         repository.deleteByDialogIdAndStateIsNot(dialogId, PatientState.COMPLETED);
     }
 
-    public PatientEntity fillPatientFields(PatientEntity patient, String value) throws DateFormatException {
+    @Transactional(rollbackOn = Exception.class)
+    public PatientEntity fillPatientFields(long patientId, String value) throws DateFormatException {
+        PatientEntity patient = getPatient(patientId);
+
         patient = switch (patient.getState()) {
             case COMPLETED -> patient;
             case SET_SECOND_NAME -> {
@@ -62,6 +67,15 @@ public class PatientService {
             }
         };
         return patient;
+    }
+
+    private PatientEntity getPatient(long id){
+        try {
+            return repository.findByIdWithLock(id).orElseThrow();
+        } catch (PessimisticLockingFailureException e){
+            log.error("Task, id={}, process error, db row is locked", id, e);
+            return null;
+        }
     }
 
     private void setBirthday(PatientEntity patient, String message) throws DateFormatException {

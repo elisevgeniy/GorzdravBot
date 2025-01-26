@@ -24,7 +24,7 @@ public class ScheduleTaskService {
     private final NotifyService notifyService;
     private final RecordService recordService;
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public void taskProcess(@NonNull long taskId) {
         log.info("Task, id={}, process start", taskId);
 

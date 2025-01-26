@@ -71,7 +71,7 @@ public class TaskService {
      */
     @Transactional(rollbackOn = Exception.class)
     public String cancelAppointmentByTask(Long taskId) throws NoSuchElementException, CancelAppointmentException {
-        TaskEntity task = repository.findById(taskId).orElseThrow();
+        TaskEntity task = repository.findTaskByIdWithLock(taskId).orElseThrow();
 
         if (api.cancelAppointment(
                 task.getPolyclinicId(),
@@ -236,7 +236,7 @@ public class TaskService {
 
     @Transactional
     public boolean restartTask(long taskId) {
-        Optional<TaskEntity> task = repository.findById(taskId);
+        Optional<TaskEntity> task = repository.findTaskByIdWithLock(taskId);
         if (task.isEmpty()) return false;
 
         task.get().setLastNotify(null);
@@ -250,7 +250,7 @@ public class TaskService {
 
     @Transactional
     public boolean changeTime(long taskId, TaskTimeLimits timeLimits) {
-        Optional<TaskEntity> task = repository.findById(taskId);
+        Optional<TaskEntity> task = repository.findTaskByIdWithLock(taskId);
         if (task.isEmpty()) {
             log.warn("Change time fail. Task id = {} not found", taskId);
             return false;
@@ -264,7 +264,7 @@ public class TaskService {
 
     @Transactional
     public boolean changeDate(long taskId, TaskDateLimits dateLimits) {
-        Optional<TaskEntity> task = repository.findById(taskId);
+        Optional<TaskEntity> task = repository.findTaskByIdWithLock(taskId);
         if (task.isEmpty()) {
             log.warn("Change date fail. Task id = {} not found", taskId);
             return false;
