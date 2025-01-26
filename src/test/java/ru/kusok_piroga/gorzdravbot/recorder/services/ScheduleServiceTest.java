@@ -29,7 +29,7 @@ class ScheduleServiceTest {
     RecordService recordService;
 
     @Autowired
-    private ScheduleService scheduleService;
+    private ScheduleTaskService scheduleTaskService;
 
     @Test
     void success_notification(){
@@ -41,7 +41,7 @@ class ScheduleServiceTest {
         doReturn(List.of(new AvailableAppointment("","","","","","")))
                 .when(fetchService).getValidAvailableAppointments(task);
 
-        scheduleService.taskProcess(task);
+        scheduleTaskService.taskProcess(task.getId());
 
         verify(taskRepository).save(task);
         assertThat(task.getLastNotify())
@@ -59,7 +59,7 @@ class ScheduleServiceTest {
         doReturn(List.of(new AvailableAppointment("123","","","","","")))
                 .when(fetchService).getValidAvailableAppointments(task);
 
-        scheduleService.taskProcess(task);
+        scheduleTaskService.taskProcess(task.getId());
 
         verify(recordService).makeRecord(eq(task), anyList());
     }
@@ -74,7 +74,7 @@ class ScheduleServiceTest {
         TaskEntity task = new TaskEntity();
         task.setLastNotify(LocalDateTime.now());
 
-        scheduleService.taskProcess(task);
+        scheduleTaskService.taskProcess(task.getId());
 
         assertThat(task.getLastNotify())
                 .isNull();

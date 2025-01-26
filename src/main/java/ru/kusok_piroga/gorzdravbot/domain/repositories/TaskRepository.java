@@ -1,8 +1,12 @@
 package ru.kusok_piroga.gorzdravbot.domain.repositories;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import lombok.NonNull;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +19,11 @@ import java.util.Optional;
 @Repository
     public interface TaskRepository extends CrudRepository<TaskEntity, Long> {
     Optional<TaskEntity> findFirstByDialogIdAndStateIsNot(@NonNull Long id, @NonNull TaskState state);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "1000")})
+    @Query("select t from TaskEntity t where t.id = ?1")
+    Optional<TaskEntity> findTaskByIdWithLock(@NonNull Long id);
 
     @Query("select t from TaskEntity t where t.completed = false and t.state = ?1")
     List<TaskEntity> findAllUncompletedTasksWithState(TaskState state);

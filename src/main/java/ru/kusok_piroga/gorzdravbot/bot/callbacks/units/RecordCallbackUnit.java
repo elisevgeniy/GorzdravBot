@@ -2,6 +2,7 @@ package ru.kusok_piroga.gorzdravbot.bot.callbacks.units;
 
 import io.github.drednote.telegram.response.GenericTelegramResponse;
 import io.github.drednote.telegram.response.TelegramResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class RecordCallbackUnit extends BaseCallbackUnit {
     public static final String FN_RECORD = "rec_rcrd";
 
     @Override
+    @Transactional
     public TelegramResponse execute(Long dialogId, CallbackData data) {
         if (!checkAffiliation(data.fn())) {
             return getNext().execute(dialogId, data);

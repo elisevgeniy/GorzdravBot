@@ -1,5 +1,6 @@
 package ru.kusok_piroga.gorzdravbot.producer.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,12 @@ public class TaskService {
             SET_DATE_LIMITS, new DateLimitFiller()
     );
 
+    @Transactional
     public List<TaskEntity> getCompletedTaskList(long chatId) {
         return repository.findAllCompletedTasksByDialogId(chatId);
     }
 
+    @Transactional
     public List<TaskEntity> getUncompletedTaskList(long chatId) {
         return repository.findAllUncompletedTasksByDialogId(chatId);
     }
@@ -54,6 +57,7 @@ public class TaskService {
         }
     }
 
+    @Transactional
     public void deleteTask(long taskId) {
         repository.deleteById(taskId);
     }
@@ -64,6 +68,7 @@ public class TaskService {
      * @throws NoSuchElementException     if task not found
      * @throws CancelAppointmentException if cancel failed
      */
+    @Transactional(rollbackOn = Exception.class)
     public String cancelAppointmentByTask(Long taskId) throws NoSuchElementException, CancelAppointmentException {
         TaskEntity task = repository.findById(taskId).orElseThrow();
 
@@ -82,6 +87,7 @@ public class TaskService {
         }
     }
 
+    @Transactional
     public void createTask(long dialogId) {
         clearUncompletedTask(dialogId);
 
@@ -93,10 +99,12 @@ public class TaskService {
         repository.save(task);
     }
 
-    private void clearUncompletedTask(long dialogId) {
+    @Transactional
+    protected void clearUncompletedTask(long dialogId) {
         repository.deleteByDialogIdAndStateIsNot(dialogId, SETUPED);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public TaskEntity fillTaskFields(TaskEntity task, String value) throws Exception {
         TaskFieldFiller filler = taskFillers.get(task.getState());
         if (filler == null) {
@@ -105,6 +113,7 @@ public class TaskService {
         return filler.fill(task, value);
     }
 
+    @Transactional
     public TaskEntity getUnsetupedTaskByDialog(Long dialogId) {
         return repository.findFirstByDialogIdAndStateIsNot(dialogId, TaskState.SETUPED).orElseThrow();
     }
@@ -208,6 +217,7 @@ public class TaskService {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public boolean skipAppointment(Long taskId, String appointmentId) {
 
         Optional<TaskEntity> task = repository.findById(taskId);
@@ -223,6 +233,7 @@ public class TaskService {
         return true;
     }
 
+    @Transactional
     public boolean restartTask(long taskId) {
         Optional<TaskEntity> task = repository.findById(taskId);
         if (task.isEmpty()) return false;
@@ -236,6 +247,7 @@ public class TaskService {
         return true;
     }
 
+    @Transactional
     public boolean changeTime(long taskId, TaskTimeLimits timeLimits) {
         Optional<TaskEntity> task = repository.findById(taskId);
         if (task.isEmpty()) {
@@ -249,6 +261,7 @@ public class TaskService {
         return true;
     }
 
+    @Transactional
     public boolean changeDate(long taskId, TaskDateLimits dateLimits) {
         Optional<TaskEntity> task = repository.findById(taskId);
         if (task.isEmpty()) {
@@ -262,10 +275,12 @@ public class TaskService {
         return true;
     }
 
+    @Transactional
     public boolean validateTaskIdByDialogId(Long taskId, Long dialogId){
         return repository.validateTaskByDialog(taskId, dialogId);
     }
 
+    @Transactional
     public boolean copyTask(Long taskId){
         Optional<TaskEntity> task = repository.findById(taskId);
         if (task.isEmpty()) {
