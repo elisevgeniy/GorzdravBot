@@ -2,7 +2,7 @@ spring:
   application:
     name: GorzdravBot
   datasource:
-    url: jdbc:postgresql://database:5432/${DATABASE_NAME}
+    url: jdbc:postgresql://${DATABASE_URL}/${DATABASE_NAME}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     driverClassName: org.postgresql.Driver

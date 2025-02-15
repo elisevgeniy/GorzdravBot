@@ -20,21 +20,50 @@ Telegram-бот, который поможет вам следить за тал
    1. конченую дату, дальше, которой номерки не рассматриваются;
    2. диапазоны дат, в которые номерок должен попадать и/или не попадать;
 
-## Установка
-1. Клонирование репозитория
-   
-```
-git clone https://github.com/elisevgeniy/GorzdravBot.git
-cd GorzdravBot
-```
+## Регистрация бота
+Для работы бота необходимо его зарегистрировать и получть `name` и `token` бота. 
 
-2. Запуск (либо 3, либо 4 пункты)
-3. С помощью Maven
-   1. Зарегистрировать бота, получть `name` и `token` бота. Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot)
+Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot).
+
+## Запуск
+Есть 3 варианта запуска: с помощью [Maven](#с-помощью-maven), [JAR файла](#с-помощью-jar-файла) и [Docker](#с-помощью-docker).
+
+### С помощью Maven
+   1. Скопировать репозиторий
+      ```
+      git clone https://github.com/elisevgeniy/GorzdravBot.git
+      cd GorzdravBot
+      ```
    2. Получить `username`, `password` и `database name` от запущенной PostgreSQL базы данных
    3. Зполнить файл `src/main/resources/application.yaml` вышеуказанными параметрами
    4. Запустить бота ```mvnw spring-boot:run```
-4. С помощью Docker
-   1. Зарегистрировать бота, получть `name` и `token` бота. Подробности на [оф. сайте](https://core.telegram.org/bots/features#creating-a-new-bot) 
-   2. Скопировать `cp ./build/.env_example ./build/.env` и заполнить `.env` 
-   3. Запустить приложение `cd build && docker compose up --build`          
+
+### С помощью Docker
+   1. Скопировать репозиторий
+       ```
+       git clone https://github.com/elisevgeniy/GorzdravBot.git
+       cd GorzdravBot
+       ```
+   2. Скопировать `cp ./build/.env_example ./build/.env` и заполнить `.env`
+   3. Собрать приложение с помощью Maven: `mvnw package`
+   3. Запустить приложение `cd build && docker compose up --build`
+
+### С помощью JAR файла
+   1. Скачать `jar` файл из [релиза](https://github.com/elisevgeniy/GorzdravBot/releases)
+   2. Получить `username`, `password` и `database name` от запущенной PostgreSQL базы данных
+   3. Запустить приложение с помощью cmd на windows (для запуска с помощью bash на linux замените `^` на `\`)
+``` 
+    java ^
+    -DDATABASE_URL=localhost:5432 ^
+    -DDATABASE_USER=user ^
+    -DDATABASE_PASSWORD=123 ^
+    -DDATABASE_NAME=gorzdrav_bot ^
+    -DBOT_NAME=NameOfYourBot ^
+    -DBOT_TOKEN=12334566:SDfsdfdsfdsfsdfsdFDSfdsfdsfsdf ^
+    -DLOKI_URL=http://localhost:3100 ^
+    -DLOKI_AUTH=username ^
+    -DLOKI_PASSWORD=password ^
+    -DAUTH_USERNAME=admin ^
+    -DAUTH_PASSWORD=password ^
+    -jar GorzdravBot-{version}.jar
+```         
