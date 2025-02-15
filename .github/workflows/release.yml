@@ -29,12 +29,15 @@ jobs:
           noNewCommitBehavior: warn
           noVersionBumpBehavior: warn
 
+      - name: Rename jar file
+        run: "cp target/GorzdravBot-0.0.1-SNAPSHOT.jar GorzdravBot-${{ steps.semver.outputs.next }}.jar"
+
       - name: Create Release
         uses: ncipollo/release-action@v1.15.0
         with:
           name: ${{ env.GITHUB_REF_NAME }}
           tag: ${{ steps.semver.outputs.next }}
-          artifacts: "build/libs/springBoot.jar"
+          artifacts: "GorzdravBot-${{ steps.semver.outputs.next }}.jar"
           token: ${{ github.token }}
           draft: false
           makeLatest: true
