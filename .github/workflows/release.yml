@@ -16,7 +16,7 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ github.token }}
-          branch: build-release
+          branch: master
           fallbackTag: 0.0.0
 
       - name: Create Release
