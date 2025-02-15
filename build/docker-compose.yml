@@ -9,6 +9,7 @@ services:
       dockerfile: build/Dockerfile
       context: ..
     environment:
+      DATABASE_URL: database:5432
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_NAME: ${DATABASE_NAME}
