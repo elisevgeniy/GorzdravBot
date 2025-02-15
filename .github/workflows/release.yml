@@ -1,0 +1,47 @@
+name: Release and Push
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Get Next Version
+        id: semver
+        uses: ietf-tools/semver-action@v1.9.0
+        with:
+          token: ${{ github.token }}
+          branch: master
+          noNewCommitBehavior: warn
+          noVersionBumpBehavior: warn
+
+      - name: Rename jar file
+        run: "cp target/GorzdravBot-0.0.1-SNAPSHOT.jar GorzdravBot-${{ steps.semver.outputs.next }}.jar"
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.15.0
+        with:
+          name: ${{ env.GITHUB_REF_NAME }}
+          tag: ${{ steps.semver.outputs.next }}
+          artifacts: "GorzdravBot-${{ steps.semver.outputs.next }}.jar"
+          token: ${{ github.token }}
+          draft: false
+          makeLatest: true
+
