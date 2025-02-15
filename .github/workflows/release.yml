@@ -18,6 +18,8 @@ jobs:
           token: ${{ github.token }}
           branch: master
           fallbackTag: 0.0.0
+          noNewCommitBehavior: warn
+          noVersionBumpBehavior: warn
 
       - name: Create Release
         uses: ncipollo/release-action@v1.15.0
