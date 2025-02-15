@@ -3,6 +3,9 @@ name: Release and Push
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release-and-push:
     runs-on: ubuntu-latest
