@@ -1,0 +1,32 @@
+name: Release and Push
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Next Version
+        id: semver
+        uses: ietf-tools/semver-action@v1.9.0
+        with:
+          token: ${{ github.token }}
+          branch: master
+          noNewCommitBehavior: warn
+          noVersionBumpBehavior: warn
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.15.0
+        with:
+          name: ${{ env.GITHUB_REF_NAME }}
+          tag: ${{ steps.semver.outputs.next }}
+          artifacts: "build/libs/springBoot.jar"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          makeLatest: true
+
