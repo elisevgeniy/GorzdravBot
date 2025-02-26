@@ -10,10 +10,10 @@ import java.util.Optional;
  * DTO for change {@link ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity}
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ChangeTaskDto(Long taskId) {
-    public static Optional<ChangeTaskDto> parse(String data){
+public record FastRecordTaskDto(Long taskId){
+    public static Optional<FastRecordTaskDto> parse(String data){
         try {
-            return Optional.of(new ObjectMapper().readValue(data, ChangeTaskDto.class));
+            return Optional.of(new ObjectMapper().readValue(data, FastRecordTaskDto.class));
         } catch (JsonProcessingException e) {
             return Optional.empty();
         }
