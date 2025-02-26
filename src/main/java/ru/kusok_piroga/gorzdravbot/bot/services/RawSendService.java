@@ -14,12 +14,21 @@ import ru.kusok_piroga.gorzdravbot.bot.exceptions.RawSendException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service for sending messages directly via the Telegram API.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RawSendService {
     private final TelegramClient telegramClient;
 
+    /**
+     * @param dialogId  chat id
+     * @param text      message text
+     * @param buttons   list = rows, map = button title -> button callbackValue
+     * @see #sendMessage(Long dialogId, String text)
+     */
     public void sendMessage(Long dialogId, String text, List<Map<String, String>> buttons){
         SendMessage.SendMessageBuilder<?, ?> sendMessageBuilder = SendMessage.builder()
                 .chatId(dialogId)
@@ -49,6 +58,11 @@ public class RawSendService {
         }
     }
 
+    /**
+     * @param dialogId  chat id
+     * @param text      message text
+     * @see #sendMessage(Long dialogId, String text, List buttons)
+     */
     public void sendMessage(Long dialogId, String text){
         sendMessage(dialogId, text, null);
     }

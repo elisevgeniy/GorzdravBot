@@ -30,10 +30,20 @@ public class NotifyService {
     private final RawSendService sendService;
     private final CallbackEncoder callbackEncoder;
 
+    /**
+     * @param task
+     * @return <code>true</code> if the notification has not been sent before, <code>false</code> otherwise
+     */
     public boolean needNotify(TaskEntity task) {
         return task.getLastNotify() == null;
     }
 
+    /**
+     * Sends a notification about available appointments to the chat
+     * @param task
+     * @param availableAppointments
+     * @return <code>true</code> if send, <code>false</code> otherwise
+     */
     public boolean notifyToChat(TaskEntity task, List<AvailableAppointment> availableAppointments) {
         sendService.sendMessage(
                 task.getDialogId(),

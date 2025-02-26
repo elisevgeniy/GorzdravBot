@@ -11,6 +11,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * <p>
+ *     Time limits for task.<br>
+ *     Constraints represent a range of type:<br><code>(hh:mm - hh:mm, hh:mm - hh:mm)?(\n| )? (! hh:mm - hh:mm, hh:mm - hh:mm)?</code><br>
+ *     This class provides methods for checking that {@link LocalTime} matches the set limits.
+ * </p>
+ * @see #validateTime(LocalTime time)
+ */
 @Setter
 @Getter
 public class TaskTimeLimits implements Serializable {
@@ -18,7 +26,7 @@ public class TaskTimeLimits implements Serializable {
     private List<List<LocalTime>> excludedLimits = new ArrayList<>();
 
     /**
-     * @param rawLimitString string with type "(чч:мм - чч:мм, чч:мм - чч:мм)?(\n| )?(!чч:мм - чч:мм, чч:мм - чч:мм)?"
+     * @param rawLimitString string with type <code>(hh:mm - hh:mm, hh:mm - hh:mm)?(\n| )? (! hh:mm - hh:mm, hh:mm - hh:mm)?</code>
      */
     public TaskTimeLimits(String rawLimitString) throws TimeLimitParseException {
         if (rawLimitString.isEmpty()) return;
@@ -75,6 +83,11 @@ public class TaskTimeLimits implements Serializable {
         }
     }
 
+    /**
+     * Checking that {@link LocalTime} matches the set limits.
+     * @param time time for check
+     * @return <code>true</code> if valid (included or not excluded) or <code>false</code> otherwise
+     */
     public boolean validateTime(LocalTime time) {
         for (var range : includedLimits) {
             if (!(

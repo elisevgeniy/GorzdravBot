@@ -5,6 +5,9 @@ import io.github.drednote.telegram.response.AbstractTelegramResponse;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * Delete a message with a callback button that was clicked
+ */
 public class DeleteMessageTelegramResponse extends AbstractTelegramResponse {
 
     @Override

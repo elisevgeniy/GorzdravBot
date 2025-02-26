@@ -9,6 +9,9 @@ import ru.kusok_piroga.gorzdravbot.bot.repositories.DialogRepository;
 
 import java.util.Optional;
 
+/**
+ * Service for update or get last user's command for chat.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

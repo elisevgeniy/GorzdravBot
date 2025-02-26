@@ -8,6 +8,9 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.repositories.CallbackRepository
 
 import java.util.Calendar;
 
+/**
+ * Service periodically cleans database of outdated callback records
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

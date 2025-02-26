@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Create a message with a callback buttons
  */
 public class InlineButtonTelegramResponse extends AbstractTelegramResponse {
     private final String messageText;

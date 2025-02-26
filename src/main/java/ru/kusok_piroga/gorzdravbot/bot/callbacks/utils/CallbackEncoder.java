@@ -11,6 +11,13 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.repositories.CallbackRepository
 
 import java.util.Optional;
 
+/**
+ * <p>
+ *     Callback data encoder<br>
+ *     It encodes the data with the string.<br>
+ *     Long data is saved in the database, and the record id is encoded
+ * </p>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,6 +30,15 @@ public class CallbackEncoder {
         return new CallbackData(functionName, data).toString();
     }
 
+    /**
+     * <p>
+     *     Encodes the data with the string.<br>
+     *     Long data is saved in the database, and the record id is encoded.
+     * </p>
+     * @param functionName callback function name
+     * @param data object for encode
+     * @return encoded string or encoded DB record id (for big objects)
+     */
     public String encode(String functionName, Object data) {
         String dataStr = data.toString();
 
@@ -33,6 +49,11 @@ public class CallbackEncoder {
         return new CallbackData(functionName, data.toString()).toString();
     }
 
+    /**
+     * Just decode or get from DB (for big objects)
+     * @param data encoded string
+     * @return decoded object, empty if any error
+     */
     public Optional<CallbackData> decode(String data) {
         try {
             CallbackData callbackData = new ObjectMapper().readValue(data, CallbackData.class);
