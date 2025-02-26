@@ -122,7 +122,7 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
 
     private boolean checkAffiliation(String function){
         return switch (function) {
-            case FN_DELETE, FN_RESTART, FN_CANCEL, FN_CHANGE, FN_COPY -> true;
+            case FN_DELETE, FN_RESTART, FN_CANCEL, FN_CHANGE, FN_COPY, FN_FAST_RECORD -> true;
             default -> false;
         };
     }
