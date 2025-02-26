@@ -24,6 +24,13 @@ public class ScheduleTaskService {
     private final NotifyService notifyService;
     private final RecordService recordService;
 
+    /**
+     * <p>
+     *     Searches for appointments that match the task and notifies or records the patient.
+     *     Uses DB row locks.
+     * </p>
+     * @param taskId task id
+     */
     @Transactional(rollbackOn = Exception.class)
     public void taskProcess(@NonNull long taskId) {
         log.info("Task, id={}, process start", taskId);

@@ -30,6 +30,10 @@ public class RecordService {
     public static final int DELAY_FOR_RECORD_VALUE = 5;
     public static final ChronoUnit DELAY_FOR_RECORD_UNIT = ChronoUnit.MINUTES;
 
+    /**
+     * @param task
+     * @return <code>true</code> if more than 5 minutes have passed since the notify message was sent, <code>false</code> otherwise
+     */
     public boolean isTimeToRecord(TaskEntity task) {
         log.info("Task, id={}, isTimeToRecord check", task.getId());
         if (task.getLastNotify() == null) {
@@ -46,10 +50,22 @@ public class RecordService {
         return result;
     }
 
+    /**
+     * Record the patient to the first available appointment
+     * @param task
+     * @param availableAppointments
+     * @return <code>true</code> if recorded, <code>false</code> otherwise
+     */
     public boolean makeRecord(TaskEntity task, List<AvailableAppointment> availableAppointments){
         return makeRecord(task, availableAppointments.get(0));
     }
 
+    /**
+     * Record the patient to the appointment
+     * @param task
+     * @param availableAppointment
+     * @return <code>true</code> if recorded, <code>false</code> otherwise
+     */
     public boolean makeRecord(TaskEntity task, AvailableAppointment availableAppointment){
         if (crateAppointment(task, availableAppointment.id())){
             messageToChat(task, availableAppointment);
@@ -58,6 +74,12 @@ public class RecordService {
         return false;
     }
 
+    /**
+     * Record the patient to the appointment
+     * @param task
+     * @param appointmentId
+     * @return <code>true</code> if recorded, <code>false</code> otherwise
+     */
     public boolean makeRecord(TaskEntity task, String appointmentId){
         if (crateAppointment(task, appointmentId)){
             messageToChat(task, "Вы записаны. Номерок '%s'".formatted(appointmentId));

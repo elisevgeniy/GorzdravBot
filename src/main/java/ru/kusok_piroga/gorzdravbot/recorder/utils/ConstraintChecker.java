@@ -13,6 +13,15 @@ import java.time.format.DateTimeParseException;
 
 @UtilityClass
 public class ConstraintChecker {
+    /**
+     * Checks that appointment matches the restrictions specified in task or is not skipped
+     * @param task 
+     * @param appointment
+     * @return <code>true</code> if match, <code>false</code> otherwise
+     * @see TaskTimeLimits
+     * @see TaskDateLimits
+     * @see SkipAppointmentEntity
+     */
     public static boolean check(TaskEntity task, AvailableAppointment appointment) {
         return checkLimitConstraint(
                 appointment.visitStart(),

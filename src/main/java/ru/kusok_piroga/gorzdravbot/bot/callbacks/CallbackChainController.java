@@ -8,6 +8,13 @@ import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.FinalCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.ICallbackChainUnit;
 
+/**
+ * <p>
+ * Builds a chain of handlers and starts callback processing.<br>
+ * Handlers must implement {@link ICallbackChainUnit}.<br>
+ * Last handler is always {@link FinalCallbackUnit}.
+ * </p>
+ */
 @Component
 public class CallbackChainController {
 
@@ -29,6 +36,11 @@ public class CallbackChainController {
         lastUnit.setNext(new FinalCallbackUnit());
     }
 
+    /** Starts callback processing
+     * @param dialogId id of current telegram chat
+     * @param data callback data
+     * @return answer to telegram. See {@link TelegramResponse}
+     */
     public TelegramResponse run(Long dialogId, CallbackData data) {
         if (firstUnit == null) throw new RuntimeException("No chain units was created");
         return firstUnit.execute(dialogId, data);

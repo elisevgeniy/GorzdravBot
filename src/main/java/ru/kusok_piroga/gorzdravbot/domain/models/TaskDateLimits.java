@@ -11,6 +11,14 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>
+ *     Date limits for task.<br>
+ *     Constraints represent a range of type:<br><code>"(dd.mm.yyyy|(dd.mm.yyyy-dd.mm.yyyy, dd.mm.yyyy-dd.mm.yyyy)?(\n| )?(!dd.mm.yyyy-dd.mm.yyyy, dd.mm.yyyy-dd.mm.yyyy)?)"</code><br>
+ *     This class provides methods for checking that {@link LocalDate} matches the set limits.
+ * </p>
+ * @see #validateDate(LocalDate date)
+ */
 @Setter
 @Getter
 public class TaskDateLimits implements Serializable {
@@ -20,7 +28,7 @@ public class TaskDateLimits implements Serializable {
     private List<List<LocalDate>> excludedLimits = new ArrayList<>();
 
     /**
-     * @param rawLimitString string with type "(дд.мм.гггг|(дд.мм.гггг-дд.мм.гггг, дд.мм.гггг-дд.мм.гггг)?(\n| )?(!дд.мм.гггг-дд.мм.гггг, дд.мм.гггг-дд.мм.гггг)?)"
+     * @param rawLimitString string with type <code>(dd.mm.yyyy|(dd.mm.yyyy-dd.mm.yyyy, dd.mm.yyyy-dd.mm.yyyy)?(\n| )?(!dd.mm.yyyy-dd.mm.yyyy, dd.mm.yyyy-dd.mm.yyyy)?)</code>
      */
     public TaskDateLimits(String rawLimitString) throws DateLimitParseException {
         if (rawLimitString.trim().length() == 10) {
@@ -95,6 +103,11 @@ public class TaskDateLimits implements Serializable {
         }
     }
 
+    /**
+     * Checking that {@link LocalDate} matches the set limits.
+     * @param date date for check
+     * @return <code>true</code> if valid (included or not excluded) or <code>false</code> otherwise
+     */
     public boolean validateDate(LocalDate date) {
         for (var range : includedLimits) {
             if (!(

@@ -16,6 +16,12 @@ import static java.util.Collections.emptyList;
 public class FetchService {
     private final ApiService api;
 
+    /**
+     * Gets all available appointments and filters them according to the restrictions specified in the task
+     * @param task
+     * @return list of available appointments
+     * @see ConstraintChecker
+     */
     public List<AvailableAppointment> getValidAvailableAppointments(TaskEntity task){
         List<AvailableAppointment> availableAppointments = api.getAvailableAppointments(task.getPolyclinicId(), task.getDoctorId());
 

@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.services.LastCommandService;
 
+/**
+ * Filter works as proxy for request. It updates last user command for chat.
+ */
 @Slf4j
 @Component
 @TelegramScope

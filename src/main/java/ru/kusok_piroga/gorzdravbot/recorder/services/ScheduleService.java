@@ -12,6 +12,9 @@ import ru.kusok_piroga.gorzdravbot.recorder.utils.PassTimeChecker;
 
 import java.util.List;
 
+/**
+ * Periodically filters all incomplete and non-expired tasks and starts searching for appointments
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
