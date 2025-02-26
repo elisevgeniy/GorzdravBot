@@ -12,6 +12,7 @@ import ru.kusok_piroga.gorzdravbot.domain.repositories.SkipAppointmentRepository
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -304,5 +305,31 @@ public class TaskService {
 
         repository.save(newTask);
         return true;
+    }
+
+    /**
+     * <p>
+     *     Switch task notification status.
+     *     If notification has already been sent, it is reset to null.
+     *     If notification was not sent, it is set 1 year earlier than the current time.
+     * </p>
+     * @param taskId task id
+     * @return <code>true</code> if notification has already been sent earlier, <code>false</code> otherwise
+     */
+    @Transactional
+    public boolean switchNotificationStatus(Long taskId){
+        TaskEntity task = repository.findById(taskId).orElseThrow(() -> {
+            log.warn("Switch notification status task fail. Task id = {} not found", taskId);
+            return new NoSuchElementException();
+        });
+        if (task.getLastNotify() == null){
+            task.setLastNotify(LocalDateTime.now().minusYears(1));
+            repository.save(task);
+            return true;
+        } else {
+            task.setLastNotify(null);
+            repository.save(task);
+            return false;
+        }
     }
 }

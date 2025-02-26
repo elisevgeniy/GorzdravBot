@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.CopyTaskDto;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.FastRecordTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.units.TaskCallbackUnit;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.utils.CallbackEncoder;
@@ -122,6 +123,16 @@ public class TaskListCommandService implements ICommandService {
                 ));
     }
 
+    private void addFastRecordCallbackButton(TaskEntity task, Map<String, String> buttons) {
+        buttons.put(
+                task.getLastNotify() == null ? "Вкл" : "Выкл"
+                        + ". мгновенную запись",
+                callbackEncoder.encode(
+                        TaskCallbackUnit.FN_FAST_RECORD,
+                        new FastRecordTaskDto(task.getId())
+                ));
+    }
+
     private TelegramResponse prepareCompletedTaskMessage(TaskEntity task){
         List<Map<String, String>> buttons = new ArrayList<>();
         buttons.add(new LinkedHashMap<>());
@@ -143,9 +154,11 @@ public class TaskListCommandService implements ICommandService {
         List<Map<String, String>> buttons = new ArrayList<>();
         buttons.add(new LinkedHashMap<>());
         buttons.add(new LinkedHashMap<>());
+        buttons.add(new LinkedHashMap<>());
         addChangeCallbackButton(task, buttons.get(0));
         addCopyCallbackButton(task, buttons.get(0));
         addDeleteCallbackButton(task, buttons.get(1));
+        addFastRecordCallbackButton(task, buttons.get(2));
         return formTaskCallbackButton(task, buttons);
     }
 

@@ -23,6 +23,7 @@ import ru.kusok_piroga.gorzdravbot.producer.exceptions.TimeFormatException;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.WrongPolyclinicForPatientException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -303,5 +304,27 @@ class TaskServiceTest {
         )).isFalse();
 
         verify(taskRepository, times(0)).save(any(TaskEntity.class));
+    }
+
+    @Test
+    void switchNotificationStatus() {
+        TaskEntity task = taskRepository.findById(1L).orElseThrow();
+        task.setLastNotify(null);
+        boolean result = taskService.switchNotificationStatus(task.getId());
+
+        assertThat(result).isTrue();
+        assertThat(task.getLastNotify())
+                .isNotNull()
+                .isBefore(LocalDateTime.now().minusMinutes(5));
+        verify(taskRepository, times(1)).save(task);
+
+
+        task.setLastNotify(LocalDateTime.now());
+        result = taskService.switchNotificationStatus(task.getId());
+
+        assertThat(result).isFalse();
+        assertThat(task.getLastNotify())
+                .isNull();
+        verify(taskRepository, times(2)).save(task);
     }
 }

@@ -8,15 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.ChangeTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.CopyTaskDto;
+import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.FastRecordTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
 import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskCopyDto;
+import ru.kusok_piroga.gorzdravbot.bot.models.dto.TaskFastRecordDto;
 import ru.kusok_piroga.gorzdravbot.bot.responses.DeleteMessageTelegramResponse;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskCancelCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskCreateCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskRestartCommandService;
+import ru.kusok_piroga.gorzdravbot.bot.services.*;
 
 import java.util.Optional;
 
@@ -29,12 +28,14 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
     private final TaskCancelCommandService taskCancelCommandService;
     private final TaskRestartCommandService taskRestartCommandService;
     private final TaskCreateCommandService taskCreateCommandService;
+    private final TaskChangeCommandService taskChangeCommandService;
 
     public static final String FN_DELETE = "tsk_del";
     public static final String FN_RESTART = "tsk_up";
     public static final String FN_CANCEL = "tsk_cnl";
     public static final String FN_CHANGE = "tsk_cng";
     public static final String FN_COPY = "tsk_cp";
+    public static final String FN_FAST_RECORD = "tsk_fstrcrd";
 
     @Override
     public TelegramResponse execute(Long dialogId, CallbackData data) {
@@ -104,6 +105,16 @@ public class TaskCallbackUnit extends BaseCallbackUnit {
                 } else {
                     return new GenericTelegramResponse("Задание не скопировано!");
                 }
+            case FN_FAST_RECORD:
+                Optional<FastRecordTaskDto> fastRecordTaskDto = FastRecordTaskDto.parse(data.d());
+                if (fastRecordTaskDto.isEmpty()) {
+                    log.error("Callback wrong format");
+                    return new GenericTelegramResponse("Ошибка значения callback");
+                }
+                return taskChangeCommandService.changeFastRecord(new TaskFastRecordDto(
+                        dialogId,
+                        fastRecordTaskDto.get().taskId()
+                ));
             default:
                 return new GenericTelegramResponse("Ошибка значения callback");
         }

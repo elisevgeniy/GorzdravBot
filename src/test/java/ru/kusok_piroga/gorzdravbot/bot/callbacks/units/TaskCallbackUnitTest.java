@@ -9,10 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.dto.RestartTaskDto;
 import ru.kusok_piroga.gorzdravbot.bot.callbacks.models.CallbackData;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskCancelCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskCreateCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskDeleteCommandService;
-import ru.kusok_piroga.gorzdravbot.bot.services.TaskRestartCommandService;
+import ru.kusok_piroga.gorzdravbot.bot.services.*;
 import ru.kusok_piroga.gorzdravbot.domain.models.PatientEntity;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.SkipAppointmentRepository;
@@ -43,9 +40,10 @@ class TaskCallbackUnitTest {
     TaskCancelCommandService taskCancelCommandService;
     @MockitoBean
     TaskCreateCommandService taskCreateCommandService;
-
     @Autowired
     TaskRestartCommandService taskRestartCommandService;
+    @MockitoBean
+    TaskChangeCommandService taskChangeCommandService;
 
     @MockitoBean
     ApiService api;
