@@ -25,7 +25,7 @@ public class ScheduleTaskService {
     private final FetchService fetchService;
     private final NotifyService notifyService;
     private final RecordService recordService;
-    private RawSendService sendService;
+    private final RawSendService sendService;
 
     /**
      * <p>
