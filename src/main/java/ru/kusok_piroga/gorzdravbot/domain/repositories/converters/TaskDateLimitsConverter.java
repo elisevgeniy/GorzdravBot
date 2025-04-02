@@ -3,6 +3,7 @@ package ru.kusok_piroga.gorzdravbot.domain.repositories.converters;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskDateLimits;
 
@@ -16,7 +17,9 @@ public class TaskDateLimitsConverter implements AttributeConverter<TaskDateLimit
     }
 
     @Override
-    public TaskDateLimits convertToEntityAttribute(String dbData) {
+    public TaskDateLimits convertToEntityAttribute(@NonNull String dbData) {
+        if (dbData.isEmpty()) return null;
+
         try {
             return new TaskDateLimits(dbData);
         } catch (DateLimitParseException e) {
