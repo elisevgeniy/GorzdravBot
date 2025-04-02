@@ -9,6 +9,8 @@ import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
+import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
+import ru.kusok_piroga.gorzdravbot.bot.services.RawSendService;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
@@ -23,6 +25,7 @@ public class ScheduleTaskService {
     private final FetchService fetchService;
     private final NotifyService notifyService;
     private final RecordService recordService;
+    private final RawSendService sendService;
 
     /**
      * <p>
@@ -100,6 +103,10 @@ public class ScheduleTaskService {
             task.setLastNotify(null);
             taskRepository.save(task);
             log.info("Task, id={}, notification nulled", task.getId());
+            sendService.sendMessage(
+                    task.getDialogId(),
+                    "Номерки за 5 минут кончились. Вы можете использовать \"Мнгновенную запись\" по команде " + Commands.COMMAND_LIST_TASK
+            );
         }
     }
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.kusok_piroga.gorzdravbot.api.models.AvailableAppointment;
+import ru.kusok_piroga.gorzdravbot.bot.services.RawSendService;
 import ru.kusok_piroga.gorzdravbot.domain.models.TaskEntity;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 
@@ -28,6 +29,8 @@ class ScheduleTaskServiceTest {
     NotifyService notifyService;
     @MockitoBean
     RecordService recordService;
+    @MockitoBean
+    RawSendService sendService;
 
     @Autowired
     private ScheduleTaskService scheduleTaskService;
