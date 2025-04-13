@@ -23,5 +23,11 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/changelogs/03-migrate-to-dates.sql
+  - changeSet:
+      id:  add-fast-record
+      author:  elisevgeniy
+      changes:
+        - sqlFile:
+            path: db/changelog/changelogs/04-fast-record.sql
 
 

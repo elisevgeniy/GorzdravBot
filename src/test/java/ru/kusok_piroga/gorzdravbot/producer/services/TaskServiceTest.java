@@ -309,22 +309,21 @@ class TaskServiceTest {
     @Test
     void switchNotificationStatus() {
         TaskEntity task = taskRepository.findById(1L).orElseThrow();
-        task.setLastNotify(null);
-        boolean result = taskService.switchNotificationStatus(task.getId());
+        task.setFastRecordEnabled(false);
+        boolean result = taskService.switchFastRecord(task.getId());
 
         assertThat(result).isTrue();
-        assertThat(task.getLastNotify())
-                .isNotNull()
-                .isBefore(LocalDateTime.now().minusMinutes(5));
+        assertThat(task.isFastRecordEnabled())
+                .isTrue();
         verify(taskRepository, times(1)).save(task);
 
 
         task.setLastNotify(LocalDateTime.now());
-        result = taskService.switchNotificationStatus(task.getId());
+        result = taskService.switchFastRecord(task.getId());
 
         assertThat(result).isFalse();
-        assertThat(task.getLastNotify())
-                .isNull();
+        assertThat(task.isFastRecordEnabled())
+                .isFalse();
         verify(taskRepository, times(2)).save(task);
     }
 }

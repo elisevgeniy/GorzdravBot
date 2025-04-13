@@ -73,7 +73,7 @@ public class TaskChangeCommandService implements ICommandService {
             throw new AccessDeniedException();
         }
 
-        if (taskService.switchNotificationStatus(taskFastRecordDto.taskId())){
+        if (taskService.switchFastRecord(taskFastRecordDto.taskId())){
             return new GenericTelegramResponse("При появлении номерка бот сразу Вас запишет");
         } else {
             return new GenericTelegramResponse("При появлении номерка бот направит Вам уведомление");
