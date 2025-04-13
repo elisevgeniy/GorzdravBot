@@ -99,13 +99,13 @@ public class ScheduleTaskService {
     }
 
     private void clearNotify(TaskEntity task){
-        if (task.getLastNotify() != null){
+        if (task.getLastNotify() != null && !task.isFastRecordEnabled()){
             task.setLastNotify(null);
             taskRepository.save(task);
             log.info("Task, id={}, notification nulled", task.getId());
             sendService.sendMessage(
                     task.getDialogId(),
-                    "Номерки за 5 минут кончились. Вы можете использовать \"Мнгновенную запись\" по команде " + Commands.COMMAND_LIST_TASK
+                    "Номерки за 5 минут кончились. Вы можете использовать \"Мгновенную запись\" по команде " + Commands.COMMAND_LIST_TASK
             );
         }
     }

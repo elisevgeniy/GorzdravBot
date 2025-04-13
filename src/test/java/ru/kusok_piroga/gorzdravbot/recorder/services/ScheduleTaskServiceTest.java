@@ -88,7 +88,16 @@ class ScheduleTaskServiceTest {
 
         TaskEntity task = taskRepository.findById(1L).orElseThrow();
         task.setLastNotify(LocalDateTime.now());
+        task.setFastRecordEnabled(true);
 
+        scheduleTaskService.taskProcess(task.getId());
+
+        assertThat(task.getLastNotify())
+                .isNotNull();
+        verify(taskRepository, times(0)).save(task);
+
+
+        task.setFastRecordEnabled(false);
         scheduleTaskService.taskProcess(task.getId());
 
         assertThat(task.getLastNotify())
