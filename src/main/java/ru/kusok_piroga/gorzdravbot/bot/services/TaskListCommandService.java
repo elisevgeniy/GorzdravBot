@@ -28,6 +28,7 @@ public class TaskListCommandService implements ICommandService {
 
     private final TaskService service;
     private final CallbackEncoder callbackEncoder;
+    private final NameService nameService;
 
     private static final String TASK_DISC = """
             Задание №%d
@@ -175,9 +176,9 @@ public class TaskListCommandService implements ICommandService {
                         task.getPatientEntity().getBirthday().format(formater),
                         (task.getTimeLimits().toString().isEmpty()) ? "нет" : task.getTimeLimits(),
                         task.getDateLimits(),
-                        task.getPolyclinicId(),
-                        task.getSpecialityId(),
-                        task.getDoctorId(),
+                        nameService.getPolyclinicName(task.getPolyclinicId()),
+                        nameService.getSpecialityName(task.getSpecialityId(),task.getPolyclinicId()),
+                        nameService.getDoctorName(task.getDoctorId(), task.getPolyclinicId(), task.getSpecialityId()),
                         (task.getRecordedAppointmentId() == null) ?
                                 "не взят"
                                 :

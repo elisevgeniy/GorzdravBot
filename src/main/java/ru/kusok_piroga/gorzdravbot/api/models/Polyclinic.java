@@ -11,16 +11,12 @@ public record Polyclinic (
     String lpuShortName,
     String lpuType,
     String oid,
-    Integer partOf,
+    String partOf,
     String headOrganization,
     String organization,
     String address,
     String phone,
     String email,
     String longitude,
-    String latitude,
-    Boolean covidVaccination,
-    Boolean inDepthExamination,
-    String covidVaccinationTicketCount,
-    String covidVaccinationTicketReceiveTime
+    String latitude
 ){}
