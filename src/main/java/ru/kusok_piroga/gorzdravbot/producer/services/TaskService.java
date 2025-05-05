@@ -14,6 +14,7 @@ import ru.kusok_piroga.gorzdravbot.domain.repositories.TaskRepository;
 import ru.kusok_piroga.gorzdravbot.producer.exceptions.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -336,14 +337,11 @@ public class TaskService {
     @Transactional
     public boolean createTaskByReferral(long dialogId, String referral, String secondName) throws WrongReferralException {
 
-        System.out.println(dialogId + " " + referral + " " + secondName);
         TaskEntity task = new TaskEntity();
 
         task.setDialogId(dialogId);
 
         ReferralInfo referralInfo = api.getReferralInfo(referral, secondName).orElseThrow(WrongReferralException::new);
-
-        System.out.println(referralInfo.toString());
 
         task.setDistrictId(0);
         task.setPolyclinicId(referralInfo.lpuId());
@@ -351,8 +349,14 @@ public class TaskService {
         task.setDoctorId(referralInfo.specialities().getFirst().doctors().getFirst().id());
 
         PatientEntity patient = null;
+        String[] patientIdParts = referralInfo.patId().split(";");
         for (PatientEntity existedPatient : patientService.getPatientList(dialogId)){
-            if (existedPatient.getPatientId().equals(referralInfo.patId())){
+            if (
+                    existedPatient.getSecondName().toUpperCase().equals(patientIdParts[0]) &&
+                    existedPatient.getFirstName().toUpperCase().equals(patientIdParts[1]) &&
+                    existedPatient.getMiddleName().toUpperCase().equals(patientIdParts[2]) &&
+                    existedPatient.getBirthday().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).equals(patientIdParts[3])
+                ){
                 patient = existedPatient;
             }
         }
