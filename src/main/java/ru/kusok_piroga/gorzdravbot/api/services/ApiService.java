@@ -1,6 +1,7 @@
 package ru.kusok_piroga.gorzdravbot.api.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,10 +32,12 @@ public class ApiService {
     private static final String URL_FIND_FUTURE_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointments?lpuId={lpuId}&patientId={patientId}";
     private static final String PATH_FIND_PATIENT = "/_api/api/v2/patient/search";
     private static final String PATH_REFERRAL_INFO = "/_api/api/v2/referral";
+    private static final String PATH_POLYCLINIC_INFO = "/_api/api/v2/shared/lpu/{lpuId}";
 
     private final WebClient webClient = WebClient.create();
     DateTimeFormatter dateFormater = DateTimeFormatter.ISO_DATE;
 
+    @Cacheable(cacheNames="districts")
     public List<District> getDistricts(){
         DistrictsResponse response = webClient
                 .get()
@@ -53,6 +56,7 @@ public class ApiService {
         }
     }
 
+    @Cacheable(cacheNames="polyclinics")
     public List<Polyclinic> getPolyclinicsByDistrict(int districtId){
         PolyclinicsResponse response = webClient
                 .get()
@@ -89,6 +93,7 @@ public class ApiService {
         }
     }
 
+    @Cacheable(cacheNames="specialties")
     public List<Specialty> getSpecialties(Integer polyclinicId){
         SpecialtiesResponse response = webClient
                 .get()
@@ -107,6 +112,7 @@ public class ApiService {
         }
     }
 
+    @Cacheable(cacheNames="doctors")
     public List<Doctor> getDoctors(Integer polyclinicId, String specialtyId){
         DoctorsResponse response = webClient
                 .get()
