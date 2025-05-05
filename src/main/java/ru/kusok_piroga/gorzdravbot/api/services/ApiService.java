@@ -75,6 +75,31 @@ public class ApiService {
         }
     }
 
+    @Cacheable(cacheNames = "polyclinics")
+    public Optional<Polyclinic> getPolyclinic(int polyclinicId) {
+        PolyclinicResponse response = webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme(SCHEME)
+                        .host(HOST)
+                        .path(PATH_POLYCLINIC_INFO)
+                        .build(polyclinicId)
+
+                )
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(PolyclinicResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
+                .block();
+
+        if (response != null && response.isSuccess()) {
+            return Optional.of(response.getPolyclinic());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public List<Polyclinic> getPolyclinicsByOMS(String omsNumber){
         PolyclinicsResponse response = webClient
                 .get()
