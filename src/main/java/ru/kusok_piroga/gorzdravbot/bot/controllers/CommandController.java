@@ -23,6 +23,7 @@ import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 public class CommandController {
 
     private final TaskCreateCommandService taskCreateCommandService;
+    private final ReferralCreateCommandService referralCreateCommandService;
     private final TaskChangeCommandService taskChangeCommandService;
     private final TaskListCommandService taskListCommandService;
     private final StartService startService;
@@ -37,6 +38,11 @@ public class CommandController {
     @TelegramCommand(COMMAND_ADD_TASK)
     public TelegramResponse onAddNewTask(UpdateRequest request) {
         return taskCreateCommandService.processCommand(request);
+    }
+
+    @TelegramCommand(COMMAND_ADD_REFERRAL)
+    public TelegramResponse onAddNewTaskByReferral(UpdateRequest request) {
+        return referralCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_PATIENT)

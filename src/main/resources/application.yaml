@@ -21,6 +21,9 @@ drednote:
         add_task:
           text: Добавить задание
           command: addtask
+        add_task_by_referral:
+          text: Добавить задание по направлению
+          command: addreferral
         add_patient:
           text: Добавить пациента
           command: addpatient

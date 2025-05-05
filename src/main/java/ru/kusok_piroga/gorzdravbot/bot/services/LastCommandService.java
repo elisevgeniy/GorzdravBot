@@ -18,6 +18,7 @@ import java.util.Optional;
 public class LastCommandService {
     private final TaskCreateCommandService taskCreateCommandService;
     private final PatientCreateCommandService patientCreateCommandService;
+    private final ReferralCreateCommandService referralCreateCommandService;
     private final StartService startService;
     private final DialogRepository repository;
 
@@ -27,6 +28,7 @@ public class LastCommandService {
             log.info("Для чата {} последняя команда - {}", dialogId, lastCommand.get().getLastCommand());
             return switch (lastCommand.get().getLastCommand()){
                 case Commands.COMMAND_ADD_TASK -> taskCreateCommandService;
+                case Commands.COMMAND_ADD_REFERRAL -> referralCreateCommandService;
                 case Commands.COMMAND_ADD_PATIENT -> patientCreateCommandService;
                 default -> startService;
             };
