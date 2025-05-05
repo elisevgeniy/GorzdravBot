@@ -125,7 +125,7 @@ public class TaskListCommandService implements ICommandService {
 
     private void addFastRecordCallbackButton(TaskEntity task, Map<String, String> buttons) {
         buttons.put(
-                (task.getLastNotify() == null ? "Вкл" : "Выкл") + " мгновенную запись",
+                (task.isFastRecordEnabled() ? "Выкл" : "Вкл") + " мгновенную запись",
                 callbackEncoder.encode(
                         TaskCallbackUnit.FN_FAST_RECORD,
                         new FastRecordTaskDto(task.getId())

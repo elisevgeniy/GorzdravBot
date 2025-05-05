@@ -332,7 +332,7 @@ public class TaskService {
             return false;
         }
     }
-
+  
     @Transactional
     public boolean createTaskByReferral(long dialogId, String referral, String secondName) throws WrongReferralException {
 
@@ -374,5 +374,24 @@ public class TaskService {
         repository.save(task);
 
         return true;
+    }
+  
+    /**
+     * <p>
+     *     Switch task FastRecord flag.
+     * </p>
+     * @param taskId task id
+     * @return <code>true</code> if FastRecord flag is true now, <code>false</code> otherwise
+     */
+    @Transactional
+    public boolean switchFastRecord(Long taskId){
+        TaskEntity task = repository.findById(taskId).orElseThrow(() -> {
+            log.warn("Switch FastRecord flag task fail. Task id = {} not found", taskId);
+            return new NoSuchElementException();
+        });
+
+        task.setFastRecordEnabled(!task.isFastRecordEnabled());
+        repository.save(task);
+        return task.isFastRecordEnabled();
     }
 }

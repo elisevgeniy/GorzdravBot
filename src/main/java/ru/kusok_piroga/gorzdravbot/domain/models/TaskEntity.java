@@ -4,6 +4,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskDateLimitsConverter;
 import ru.kusok_piroga.gorzdravbot.domain.repositories.converters.TaskTimeLimitsConverter;
 
@@ -43,6 +44,10 @@ public class TaskEntity {
 
     private String recordedAppointmentId;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean isFastRecordEnabled;
+
     @ManyToOne
     @JoinColumn(name="patient_id")
     private PatientEntity patientEntity;
@@ -55,16 +60,14 @@ public class TaskEntity {
 
     @Override
     public String toString() {
-        return new StringBuffer()
-                .append("id=").append(id).append(", ")
-                .append("completed=").append(completed).append(", ")
-                .append("dialogId=").append(dialogId).append(", ")
-                .append("dateLimits=").append(dateLimits).append(", ")
-                .append("timeLimits=").append(timeLimits).append(", ")
-                .append("lastNotify=").append(lastNotify).append(", ")
-                .append("recordedAppointmentId=").append(recordedAppointmentId).append(", ")
-                .append("patientEntity id=").append(patientEntity.getId()).append(", ")
-                .append("patientEntity id=").append(patientEntity.getId()).append(", ")
-                .toString();
+        return "id=" + id + ", " +
+                "completed=" + completed + ", " +
+                "dialogId=" + dialogId + ", " +
+                "dateLimits=" + dateLimits + ", " +
+                "timeLimits=" + timeLimits + ", " +
+                "lastNotify=" + lastNotify + ", " +
+                "recordedAppointmentId=" + recordedAppointmentId + ", " +
+                "patientEntity id=" + patientEntity.getId() + ", " +
+                "patientEntity id=" + patientEntity.getId() + ", ";
     }
 }
