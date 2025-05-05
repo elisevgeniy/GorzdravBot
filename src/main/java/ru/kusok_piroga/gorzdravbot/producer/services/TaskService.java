@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.kusok_piroga.gorzdravbot.api.models.ReferralInfo;
 import ru.kusok_piroga.gorzdravbot.api.services.ApiService;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.DateLimitParseException;
 import ru.kusok_piroga.gorzdravbot.domain.exceptions.TimeLimitParseException;
@@ -24,7 +25,6 @@ import static ru.kusok_piroga.gorzdravbot.domain.models.TaskState.*;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-
     private final ApiService api;
     private final TaskRepository repository;
     private final PatientService patientService;
@@ -332,7 +332,50 @@ public class TaskService {
             return false;
         }
     }
+  
+    @Transactional
+    public boolean createTaskByReferral(long dialogId, String referral, String secondName) throws WrongReferralException {
 
+        System.out.println(dialogId + " " + referral + " " + secondName);
+        TaskEntity task = new TaskEntity();
+
+        task.setDialogId(dialogId);
+
+        ReferralInfo referralInfo = api.getReferralInfo(referral, secondName).orElseThrow(WrongReferralException::new);
+
+        System.out.println(referralInfo.toString());
+
+        task.setDistrictId(0);
+        task.setPolyclinicId(referralInfo.lpuId());
+        task.setSpecialityId(Integer.parseInt(referralInfo.specialities().getFirst().id()));
+        task.setDoctorId(referralInfo.specialities().getFirst().doctors().getFirst().id());
+
+        PatientEntity patient = null;
+        for (PatientEntity existedPatient : patientService.getPatientList(dialogId)){
+            if (existedPatient.getPatientId().equals(referralInfo.patId())){
+                patient = existedPatient;
+            }
+        }
+        if (patient == null) {
+            patient = new PatientEntity();
+            patient.setDialogId(dialogId);
+            patient.setPatientId(referralInfo.patId());
+            patient.setFirstName(referralInfo.firstName());
+            patient.setMiddleName(referralInfo.middleName());
+            patient.setSecondName(referralInfo.middleName());
+            patient.setBirthday(referralInfo.birthDate().toLocalDate());
+            patient.setState(PatientState.COMPLETED);
+            patientService.savePatient(patient);
+        }
+
+        task.setPatientEntity(patient);
+        task.setState(TaskState.SET_TIME_LIMITS);
+
+        repository.save(task);
+
+        return true;
+    }
+  
     /**
      * <p>
      *     Switch task FastRecord flag.

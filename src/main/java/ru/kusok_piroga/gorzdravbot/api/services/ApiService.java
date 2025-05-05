@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class ApiService {
     private static final String URL_CANCEL_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointment/cancel";
     private static final String URL_FIND_FUTURE_APPOINTMENT = "https://gorzdrav.spb.ru/_api/api/v2/appointments?lpuId={lpuId}&patientId={patientId}";
     private static final String PATH_FIND_PATIENT = "/_api/api/v2/patient/search";
+    private static final String PATH_REFERRAL_INFO = "/_api/api/v2/referral";
 
     private final WebClient webClient = WebClient.create();
     DateTimeFormatter dateFormater = DateTimeFormatter.ISO_DATE;
@@ -183,6 +185,29 @@ public class ApiService {
             return response.getPatientId();
         } else {
             return "";
+        }
+    }
+
+    public Optional<ReferralInfo> getReferralInfo(String referral, String lastName){
+        ReferralResponse response = webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme(SCHEME)
+                        .host(HOST)
+                        .path(PATH_REFERRAL_INFO + "/" + referral)
+                        .queryParam("lastName", lastName)
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(ReferralResponse.class)
+                .timeout(Duration.ofSeconds(20))
+                .retry(3)
+                .block();
+
+        if (response != null && response.isSuccess()){
+            return Optional.of(response.getReferralInfo());
+        } else {
+            return Optional.empty();
         }
     }
 
