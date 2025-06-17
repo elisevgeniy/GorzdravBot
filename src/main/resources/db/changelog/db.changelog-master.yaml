@@ -29,5 +29,11 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/changelogs/04-fast-record.sql
+  - changeSet:
+      id:  add-delete-cascade
+      author:  elisevgeniy
+      changes:
+        - sqlFile:
+            path: db/changelog/changelogs/05-add-delete-cascade.sql
 
 
