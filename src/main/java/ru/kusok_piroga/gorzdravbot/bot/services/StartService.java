@@ -9,7 +9,10 @@ import ru.kusok_piroga.gorzdravbot.bot.models.Commands;
 @Service
 public class StartService implements ICommandService {
 
-    private static final String MSG_START = "Приветствую!\nДля возможности записаться требуется добавить пациента.\nЭто можно сделать командой " + Commands.COMMAND_ADD_PATIENT;
+    private static final String MSG_START = """
+            Приветствую!
+            Для возможности записаться требуется добавить пациента.
+            Это можно сделать командой""" + Commands.COMMAND_ADD_PATIENT;
 
     @Override
     public TelegramResponse processCommand(UpdateRequest request) {

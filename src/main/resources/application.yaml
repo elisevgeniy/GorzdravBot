@@ -50,3 +50,7 @@ security:
   auth:
     username: ${AUTH_USERNAME}
     password: ${AUTH_PASSWORD}
+
+whitelist:
+  enable: ${WHITELIST_ENABLE}
+  ids: ${WHITELIST_IDS}

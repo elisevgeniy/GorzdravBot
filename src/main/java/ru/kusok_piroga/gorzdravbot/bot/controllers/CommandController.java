@@ -22,6 +22,7 @@ import static ru.kusok_piroga.gorzdravbot.bot.models.Commands.*;
 @RequiredArgsConstructor
 public class CommandController {
 
+    private final WhiteListService whiteListService;
     private final TaskCreateCommandService taskCreateCommandService;
     private final ReferralCreateCommandService referralCreateCommandService;
     private final TaskChangeCommandService taskChangeCommandService;
@@ -32,36 +33,50 @@ public class CommandController {
 
     @TelegramCommand(COMMAND_START)
     public TelegramResponse onStart(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return startService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_TASK)
     public TelegramResponse onAddNewTask(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return taskCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_REFERRAL)
     public TelegramResponse onAddNewTaskByReferral(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return referralCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_ADD_PATIENT)
     public TelegramResponse onAddNewPatient(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return patientCreateCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_PATIENT)
     public TelegramResponse onListPatient(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return patientListCommandService.processCommand(request);
     }
 
     @TelegramCommand(COMMAND_LIST_TASK)
     public TelegramResponse onListTask(UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         return taskListCommandService.processCommand(request);
     }
 
     @TelegramRequest(COMMAND_CHANGE_TASK + "/{taskId}/time {value}")
     public TelegramResponse onChangeTaskTime(@TelegramPatternVariable("taskId") String taskIdStr, @TelegramPatternVariable("value") String newTimeLimitsStr, UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         if (taskIdStr.isEmpty() || taskIdStr.isBlank() ||
             newTimeLimitsStr.isEmpty() || newTimeLimitsStr.isBlank()){
             throw new WrongParamException();
@@ -80,6 +95,8 @@ public class CommandController {
 
     @TelegramRequest(COMMAND_CHANGE_TASK + "/{taskId}/time")
     public TelegramResponse onChangeTaskTimeEmpty(@TelegramPatternVariable("taskId") String taskIdStr, UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         if (taskIdStr.isEmpty() || taskIdStr.isBlank()){
             throw new WrongParamException();
         }
@@ -97,6 +114,8 @@ public class CommandController {
 
     @TelegramRequest(COMMAND_CHANGE_TASK + "/{taskId}/date {value}")
     public TelegramResponse onChangeTaskDate(@TelegramPatternVariable("taskId") String taskIdStr, @TelegramPatternVariable("value") String newDateLimitsStr, UpdateRequest request) {
+        if (! whiteListService.checkAccess(request.getChatId())) return whiteListService.processCommand(request);
+
         if (taskIdStr.isEmpty() || taskIdStr.isBlank() ||
             newDateLimitsStr.isEmpty() || newDateLimitsStr.isBlank()){
             throw new WrongParamException();
