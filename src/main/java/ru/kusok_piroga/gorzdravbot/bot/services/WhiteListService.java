@@ -15,7 +15,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class WhiteListService implements ICommandService {
     @Value("${whitelist.enable}")
-    Boolean enabled;
+    Boolean enabled = false;
 
     @Value("${whitelist.ids}")
     Set<Long> accessedIds;
